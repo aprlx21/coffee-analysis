@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Coffee, Star } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { resizeGoogleImage } from "@/lib/image-url";
 import { cn } from "@/lib/utils";
 import type { MapPoint } from "../types";
 
@@ -21,10 +22,10 @@ export function MapPopup({ point }: MapPopupProps) {
         {point.featuredImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={point.featuredImage}
+            src={resizeGoogleImage(point.featuredImage, 480, 240) ?? undefined}
             alt={point.name}
             loading="lazy"
-            className="size-full object-cover transition-transform duration-300 hover:scale-105"
+            className="size-full object-cover text-transparent transition-transform duration-300 hover:scale-105"
           />
         ) : (
           <div className="flex size-full items-center justify-center bg-primary/20">

@@ -17,6 +17,14 @@ export const searchCafesTool = tool({
       .describe(
         "Danh sách tiện ích cần có: has_wifi, has_ac, has_outlets, laptop_friendly, quiet, pet_friendly, outdoor_seating, rooftop, accepts_card, v.v.",
       ),
+    item: z
+      .string()
+      .regex(/^[a-z0-9_]+$/)
+      .optional()
+      .describe(
+        "Chỉ lấy quán có bán món chuẩn hoá này (canonical id): ca_phe_den, ca_phe_sua, bac_xiu, ca_phe_muoi, cold_brew, latte, matcha_latte, tra_dao...",
+      ),
+    maxItemPrice: z.number().min(0).optional().describe("Giá tối đa (VND) của món `item`. Chỉ dùng kèm `item`."),
     minRating: z.number().min(0).max(5).optional().describe("Mức rating Google Maps tối thiểu (0-5)"),
     sort: z
       .enum(["rating", "reviews", "work_score", "price_asc", "price_desc"])
@@ -32,8 +40,9 @@ export const searchCafesTool = tool({
     return {
       totalFound: result.total,
       currentPage: result.page,
-      cafes: result.items.slice(0, 6).map((c) => ({
+      cafes: result.items.slice(0, 8).map((c) => ({
         placeId: c.placeId,
+        url: `/quan/${c.placeId}`,
         name: c.name,
         address: c.shortAddress || c.address,
         rating: c.rating,

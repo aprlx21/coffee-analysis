@@ -76,7 +76,7 @@ export default async function PhanTichPage() {
             </h3>
           </div>
           <p className="mt-1 text-xs font-medium text-muted-foreground sm:text-sm">
-            Xem bản báo cáo thị trường chuyên sâu do AI tổng hợp sắp ra mắt.
+            Đọc báo cáo thị trường chuyên sâu hoặc hỏi trực tiếp trợ lý AI.
           </p>
         </div>
 

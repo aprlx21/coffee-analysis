@@ -1,27 +1,35 @@
 # ask-ai/ — Trợ lý AI Cà phê An Thượng
 
-Feature quản lý giao diện và tương tác với Trợ lý AI chuyên biệt cho khu phố Tây An Thượng (Đà Nẵng).
+Giao diện chat thật với trợ lý AI (Groq + tool-calling trên dữ liệu Supabase). Trang: `/hoi-ai`.
 
-## Mục tiêu & Trạng thái
+## Luồng
 
-- **Giai đoạn hiện tại (MVP v0.1)**: Giao diện tĩnh "Coming Soon" với khung chat Neubrutalism hoàn chỉnh, chuẩn bị chỗ cho Chatbot RAG (Retrieval-Augmented Generation).
-- **Giai đoạn tiếp theo (Post-MVP)**: Kết nối API LLM (Gemini Flash) + pgvector / RAG truy xuất dữ liệu từ 115 quán cafe, 6.000+ món menu OCR và đánh giá thực tế.
-- **Ranh giới nghiêm ngặt**: Ở phiên bản hiện tại, KHÔNG gọi API ngoài/LLM, KHÔNG thêm biến môi trường, KHÔNG cài thêm dependencies.
+```
+AskAiView ("use client")
+  → useAskAi()  ── GET  /api/ai/quota        (số lượt còn lại)
+                └─ POST /api/ai/chat         (SSE UI message stream của AI SDK)
+                     → validate → trừ lượt → streamText(Groq + tools trong @/ai)
+```
+
+- `hooks/use-ask-ai.ts` tự đọc SSE (`data: {type: "text-delta" | "tool-input-start" | "error" ...}`), **không** dùng `@ai-sdk/react` để khỏi thêm dependency. Nếu sau này cài `@ai-sdk/react` thì thay hook này bằng `useChat`.
+- Client chỉ gửi phần text của lịch sử; server giữ tối đa 8 tin gần nhất, câu hỏi tối đa 1000 ký tự (UI chặn ở 500).
+- Lượt hỏi: `AI_DAILY_QUOTA` (3 lượt/24h) ở `@/server/rate-limit/ai-quota`. Server trả header `X-AI-Remaining-Quota`, `X-AI-Quota-Max`; hết lượt trả 429 `QUOTA_EXCEEDED` kèm `reset_at`.
+- Lỗi luôn có dạng `{ error: CODE, message: "tiếng Việt hiển thị được" }` — UI in thẳng `message`.
 
 ## Cấu trúc
 
 ```
 features/ask-ai/
-├── AGENTS.md                          # Tài liệu ngữ cảnh feature
-├── index.ts                           # Public API xuất ra ngoài
-└── components/
-    └── ask-ai-view.tsx                # Khung chat tĩnh Neubrutalism chuẩn bị cho RAG
+├── index.ts
+├── hooks/use-ask-ai.ts            # state chat + đọc stream + quota
+└── components/ask-ai-view.tsx     # khung chat, gợi ý, bong bóng, ô nhập
 ```
 
-## Quy ước Thiết kế (Neubrutalism)
+Câu trả lời render bằng `@/components/markdown` (bảng, danh sách, link nội bộ `/quan/<placeId>`).
 
-- Khung chat với viền đen `border-2 border-border`, bóng khối cứng `shadow-hard-card` (4px) và `shadow-hard` (3px).
-- Nền kem `bg-background` (#FFFDF5), bề mặt card `bg-card` (#FFFFFF), điểm nhấn vàng `bg-primary` (#FFE600).
-- Tin nhắn AI chào mừng trình bày rõ năng lực của trợ lý (làm việc, so sánh giá menu OCR, tiện ích).
-- 4 câu hỏi gợi ý mẫu dạng chips tương tác xúc giác với tooltip và phản hồi demo.
-- Ô nhập liệu và nút gửi ở trạng thái chuẩn bị (disabled) kèm ghi chú rõ ràng về lộ trình RAG.
+## Lưu ý
+
+- Khung chat cao theo viewport (`100dvh` trừ header/bottom-nav); vùng tin nhắn cuộn bên trong, tự bám đáy trừ khi người dùng cuộn lên.
+- Thêm tool mới ở `@/ai/tools` thì bổ sung nhãn tiếng Việt vào `TOOL_LABELS` / `TOOL_DONE_LABELS`.
+- Máy lạnh/ổ cắm là dữ liệu suy luận từ review — giữ dòng cảnh báo dưới ô nhập.
+- Test tay sẽ trừ lượt thật trong bảng `ai_rate_limits` (định danh = hash IP + User-Agent).

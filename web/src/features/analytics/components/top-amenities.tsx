@@ -13,7 +13,7 @@ export function TopAmenities({ amenities, totalShops }: TopAmenitiesProps) {
   return (
     <div className="rounded-lg border-2 border-border bg-card p-6 shadow-hard-card md:p-8">
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-3">
         <div>
           <div className="flex items-center gap-2">
             <div className="flex size-7 items-center justify-center rounded-md border-2 border-border bg-primary text-primary-foreground shadow-hard-sm">
@@ -34,16 +34,16 @@ export function TopAmenities({ amenities, totalShops }: TopAmenitiesProps) {
       </div>
 
       {/* Grid of amenities */}
-      <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-1">
         {amenities.map((item) => {
           return (
             <div key={item.key} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs sm:text-sm">
+              <div className="flex items-end justify-between gap-2 text-xs sm:text-sm">
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="font-heading font-bold text-foreground">{item.label}</span>
                   {item.isInferred && (
                     <span className="py-0.2 rounded border border-border bg-primary px-1.5 text-[10px] font-extrabold text-primary-foreground uppercase shadow-[1px_1px_0px_0px_var(--border)]">
-                      Suy luận từ review
+                      Theo review
                     </span>
                   )}
                 </div>

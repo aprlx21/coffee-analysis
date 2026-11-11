@@ -1,23 +1,36 @@
 "use client";
 
-import Link from "next/link";
 import * as React from "react";
-import { ArrowLeft, Bot, Coffee, Dog, Laptop, Receipt, RotateCcw, Send, Sparkles } from "lucide-react";
+import {
+  Bot,
+  CircleAlert,
+  Coffee,
+  Dog,
+  Laptop,
+  LoaderCircle,
+  Receipt,
+  RotateCcw,
+  Send,
+  Sparkles,
+  Square,
+  TrendingUp,
+} from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Markdown } from "@/components/markdown";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-export interface SuggestedPrompt {
+import { useAskAi, type AiQuota, type ChatMessage } from "../hooks/use-ask-ai";
+
+interface SuggestedPrompt {
   id: string;
   icon: React.ComponentType<{ className?: string }>;
   text: string;
   category: string;
 }
 
-export const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
+const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
   {
     id: "work-space",
     icon: Laptop,
@@ -25,331 +38,340 @@ export const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
     category: "Làm việc",
   },
   {
-    id: "salt-coffee",
-    icon: Coffee,
-    text: "Quán nào có cà phê muối ngon quanh đường Ngô Thì Sĩ?",
-    category: "Món ngon",
-  },
-  {
     id: "compare-price",
     icon: Receipt,
     text: "So sánh giá bạc xỉu các quán tại An Thượng",
-    category: "Giá OCR",
+    category: "Giá menu",
+  },
+  {
+    id: "salt-coffee",
+    icon: Coffee,
+    text: "Quán nào có cà phê muối dưới 40.000đ?",
+    category: "Món ngon",
   },
   {
     id: "pet-friendly",
     icon: Dog,
-    text: "Quán cafe nào cho phép mang thú cưng (pet-friendly)?",
+    text: "Quán nào cho mang thú cưng và có chỗ ngồi ngoài trời?",
     category: "Tiện ích",
+  },
+  {
+    id: "market",
+    icon: TrendingUp,
+    text: "Có nên mở quán cafe làm việc ở An Thượng không?",
+    category: "Thị trường",
   },
 ];
 
-export function AskAiView() {
-  const [selectedPrompt, setSelectedPrompt] = React.useState<SuggestedPrompt | null>(null);
-  const [demoNotice, setDemoNotice] = React.useState<string | null>(null);
+const TOOL_LABELS: Record<string, string> = {
+  searchCafes: "Đang tìm quán phù hợp",
+  getCafeDetail: "Đang xem chi tiết quán",
+  getCafeMenu: "Đang đọc thực đơn",
+  compareItemPrices: "Đang so sánh giá",
+  getMarketInsights: "Đang tra báo cáo thị trường",
+};
 
-  const handleSelectPrompt = (prompt: SuggestedPrompt) => {
-    setSelectedPrompt(prompt);
-    setDemoNotice(
-      `Bạn đã chọn câu hỏi demo: "${prompt.text}". Trợ lý AI đang được kết nối với cơ sở dữ liệu RAG (115 quán, 764 giá menu OCR, tiện ích thực địa). Tính năng sẽ phản hồi đầy đủ trong bản cập nhật tới!`,
+const TOOL_DONE_LABELS: Record<string, string> = {
+  searchCafes: "Danh sách quán",
+  getCafeDetail: "Chi tiết quán",
+  getCafeMenu: "Thực đơn",
+  compareItemPrices: "Bảng giá",
+  getMarketInsights: "Báo cáo thị trường",
+};
+
+const MAX_INPUT_CHARS = 500;
+
+function formatResetTime(resetAt: string | null): string | null {
+  if (!resetAt) return null;
+  const date = new Date(resetAt);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" });
+}
+
+function QuotaMeter({ quota }: { quota: AiQuota | null }) {
+  if (!quota) {
+    return <span className="h-7 w-28 animate-pulse rounded-full border-2 border-border bg-muted" aria-hidden="true" />;
+  }
+  return (
+    <div
+      className="flex items-center gap-2 rounded-full border-2 border-border bg-card px-2.5 py-1 shadow-hard-sm"
+      aria-label={`Còn ${quota.remaining} trên ${quota.max} lượt hỏi hôm nay`}
+    >
+      <div className="flex items-center gap-1" aria-hidden="true">
+        {Array.from({ length: quota.max }, (_, index) => (
+          <span
+            key={index}
+            className={cn(
+              "size-2.5 rounded-full border-2 border-border",
+              index < quota.remaining ? "bg-primary" : "bg-muted",
+            )}
+          />
+        ))}
+      </div>
+      <span className="font-mono text-[11px] font-bold whitespace-nowrap text-foreground">
+        {quota.remaining}/{quota.max} lượt
+      </span>
+    </div>
+  );
+}
+
+function AssistantAvatar() {
+  return (
+    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border-2 border-border bg-primary text-primary-foreground shadow-hard-sm">
+      <Bot className="size-4 stroke-[2.5]" />
+    </div>
+  );
+}
+
+function MessageBubble({ message, isStreaming }: { message: ChatMessage; isStreaming: boolean }) {
+  if (message.role === "user") {
+    return (
+      <div className="flex justify-end">
+        <div className="max-w-[85%] rounded-xl rounded-tr-sm border-2 border-border bg-primary px-3.5 py-2.5 text-sm font-bold break-words whitespace-pre-wrap text-primary-foreground shadow-hard-sm sm:max-w-[75%]">
+          {message.text}
+        </div>
+      </div>
     );
-  };
+  }
 
-  const handleReset = () => {
-    setSelectedPrompt(null);
-    setDemoNotice(null);
-  };
+  const waiting = isStreaming && !message.text && !message.error;
+  const finishedTools = message.tools.filter((tool) => tool !== message.activeTool);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 md:py-10">
-      {/* ======================================================== */}
-      {/* Top Header & Breadcrumb                                 */}
-      {/* ======================================================== */}
-      <div className="mb-6 flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <Link href="/" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs font-bold")}>
-            <ArrowLeft className="mr-1.5 size-3.5 stroke-[2.5]" />
-            VỀ KHÁM PHÁ
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <Badge variant="default" className="text-xs font-black tracking-wider uppercase">
-              SẮP RA MẮT
-            </Badge>
-            <Badge variant="secondary" className="font-mono text-xs font-bold">
-              MVP v0.1
-            </Badge>
+    <div className="flex items-start gap-2.5">
+      <AssistantAvatar />
+      <div className="min-w-0 flex-1 space-y-2">
+        {(finishedTools.length > 0 || message.activeTool) && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {finishedTools.map((tool) => (
+              <span
+                key={tool}
+                className="rounded-full border-2 border-border bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground"
+              >
+                ✓ {TOOL_DONE_LABELS[tool] ?? "Dữ liệu"}
+              </span>
+            ))}
+            {message.activeTool && (
+              <span className="flex items-center gap-1 rounded-full border-2 border-border bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                <LoaderCircle className="size-3 animate-spin stroke-[2.5]" />
+                {TOOL_LABELS[message.activeTool] ?? "Đang tra dữ liệu"}…
+              </span>
+            )}
           </div>
-        </div>
+        )}
 
-        <div>
-          <h1 className="font-heading text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl md:text-4xl">
-            Hỏi AI Cà Phê An Thượng
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm font-medium text-muted-foreground sm:text-base">
-            Trợ lý thông minh khai thác dữ liệu từ 115 quán cafe, hàng nghìn đánh giá thực tế và bảng giá menu bóc tách
-            OCR.
-          </p>
+        {waiting && !message.activeTool && (
+          <div
+            className="inline-flex items-center gap-1.5 rounded-xl rounded-tl-sm border-2 border-border bg-card px-3.5 py-3 shadow-hard-sm"
+            role="status"
+            aria-label="Trợ lý đang soạn câu trả lời"
+          >
+            {[0, 1, 2].map((dot) => (
+              <span
+                key={dot}
+                className="size-2 animate-bounce rounded-full bg-foreground"
+                style={{ animationDelay: `${dot * 120}ms` }}
+              />
+            ))}
+          </div>
+        )}
+
+        {message.text && (
+          <div className="rounded-xl rounded-tl-sm border-2 border-border bg-card px-3.5 py-3 shadow-hard-sm sm:px-4">
+            <Markdown content={message.text} />
+          </div>
+        )}
+
+        {message.error && (
+          <div
+            role="alert"
+            className="flex items-start gap-2 rounded-lg border-2 border-border bg-destructive/15 px-3 py-2.5 text-xs font-bold text-foreground sm:text-sm"
+          >
+            <CircleAlert className="mt-0.5 size-4 shrink-0 stroke-[2.5]" />
+            <span>{message.error}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ disabled, onPick }: { disabled: boolean; onPick: (text: string) => void }) {
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex items-start gap-2.5">
+        <AssistantAvatar />
+        <div className="max-w-xl rounded-xl rounded-tl-sm border-2 border-border bg-card px-3.5 py-3 text-sm leading-relaxed font-medium text-foreground shadow-hard-sm sm:px-4">
+          Chào bạn! Mình tra cứu trực tiếp dữ liệu <strong className="font-extrabold">115 quán cafe An Thượng</strong>:
+          tiện ích làm việc, giá đồ uống từ thực đơn và báo cáo thị trường. Hỏi mình bất cứ điều gì, hoặc chọn một gợi ý
+          bên dưới.
         </div>
       </div>
 
-      {/* ======================================================== */}
-      {/* Main Neubrutalist Chat Frame                             */}
-      {/* ======================================================== */}
-      <div className="flex min-h-[560px] flex-col overflow-hidden rounded-xl border-2 border-border bg-card shadow-hard-card">
-        {/* Chatbox Header */}
-        <header className="flex items-center justify-between border-b-2 border-border bg-muted/50 px-4 py-3 sm:px-6 sm:py-4">
-          <div className="flex items-center gap-3">
-            {/* AI Avatar Brutalist */}
-            <div className="flex size-10 items-center justify-center rounded-lg border-2 border-border bg-primary text-primary-foreground shadow-hard">
-              <Bot className="size-5 stroke-[2.5]" />
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="font-heading text-base font-extrabold text-foreground sm:text-lg">
-                  Trợ lý Cà phê An Thượng
-                </h2>
-                <span className="hidden rounded-full border border-border bg-primary px-2 py-0.5 text-[10px] font-black uppercase shadow-[1px_1px_0px_0px_var(--border)] sm:inline-block">
-                  AI BOT
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="inline-block size-2 animate-pulse rounded-full border border-border bg-emerald-500" />
-                <span className="text-xs font-semibold text-muted-foreground">
-                  Chuẩn bị dữ liệu RAG · 115 quán phố Tây
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Badge variant="default" className="px-2.5 py-1 text-xs font-black tracking-wider uppercase">
-              COMING SOON
-            </Badge>
-          </div>
-        </header>
-
-        {/* Chatbox Content / Messages Area */}
-        <div className="flex flex-1 flex-col justify-between gap-6 p-4 sm:p-6">
-          <div className="space-y-6">
-            {/* AI Welcome Message */}
-            <div className="flex items-start gap-3">
-              <div className="hidden size-8 shrink-0 items-center justify-center rounded-lg border-2 border-border bg-primary font-black text-primary-foreground shadow-hard-sm sm:flex">
-                <Sparkles className="size-4 stroke-[2.5]" />
-              </div>
-
-              <div className="w-full max-w-2xl space-y-4 rounded-2xl rounded-tl-sm border-2 border-border bg-background p-4 shadow-hard-sm sm:p-5">
-                <div className="flex items-center justify-between gap-2 border-b-2 border-border/20 pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-heading text-sm font-bold text-foreground sm:text-base">
-                      Trợ lý AI An Thượng
-                    </span>
-                    <Badge variant="secondary" className="text-[10px] font-bold">
-                      BẢN XEM TRƯỚC
-                    </Badge>
-                  </div>
-                  <span className="font-mono text-[11px] font-semibold text-muted-foreground">An Thượng, ĐN</span>
-                </div>
-
-                <div className="space-y-2 text-sm leading-relaxed font-medium text-foreground">
-                  <p>
-                    Chào bạn! Mình là <strong>Trợ lý AI chuyên biệt về cà phê An Thượng</strong>. Mình đang được huấn
-                    luyện và nạp dữ liệu từ 115 quán cafe trong khu vực để giúp bạn tìm quán nhanh và chuẩn xác nhất:
-                  </p>
-                </div>
-
-                {/* Capabilities grid */}
-                <div className="grid gap-2.5 sm:grid-cols-2">
-                  <div className="flex items-start gap-2.5 rounded-lg border-2 border-border bg-card p-3 shadow-[2px_2px_0px_0px_var(--border)]">
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-primary text-primary-foreground">
-                      <Laptop className="size-3.5 stroke-[2.5]" />
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-bold text-foreground">Làm việc & Học tập</h3>
-                      <p className="text-[11px] font-medium text-muted-foreground">
-                        Tìm quán có máy lạnh, ổ cắm từng bàn, wifi mạnh và độ yên tĩnh cao.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 rounded-lg border-2 border-border bg-card p-3 shadow-[2px_2px_0px_0px_var(--border)]">
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-primary text-primary-foreground">
-                      <Receipt className="size-3.5 stroke-[2.5]" />
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-bold text-foreground">So sánh giá menu OCR</h3>
-                      <p className="text-[11px] font-medium text-muted-foreground">
-                        Tra cứu mức giá bạc xỉu, cold brew, cà phê muối bóc tách trực tiếp từ thực đơn.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 rounded-lg border-2 border-border bg-card p-3 shadow-[2px_2px_0px_0px_var(--border)]">
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-primary text-primary-foreground">
-                      <Dog className="size-3.5 stroke-[2.5]" />
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-bold text-foreground">Tiện ích đặc thù</h3>
-                      <p className="text-[11px] font-medium text-muted-foreground">
-                        Quán mở khuya sau 22h, pet-friendly cho mang cún cưng, thanh toán Apple Pay.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 rounded-lg border-2 border-border bg-card p-3 shadow-[2px_2px_0px_0px_var(--border)]">
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-primary text-primary-foreground">
-                      <Coffee className="size-3.5 stroke-[2.5]" />
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-bold text-foreground">Gu quán chuẩn xác</h3>
-                      <p className="text-[11px] font-medium text-muted-foreground">
-                        Gợi ý quán cafe specialty, view chill ngắm biển Mỹ An hay góc hẹn hò lãng mạn.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Suggested Prompts Section */}
-            <div className="space-y-3 pt-2">
-              <div className="flex items-center gap-2">
-                <Sparkles className="size-4 text-primary" />
-                <span className="font-heading text-xs font-extrabold tracking-wide text-foreground uppercase sm:text-sm">
-                  CÂU HỎI GỢI Ý MẪU (BẤM ĐỂ TRẢI NGHIỆM THỬ)
-                </span>
-              </div>
-
-              <TooltipProvider delay={100}>
-                <div className="grid gap-2.5 sm:grid-cols-2">
-                  {SUGGESTED_PROMPTS.map((prompt) => {
-                    const Icon = prompt.icon;
-                    const isSelected = selectedPrompt?.id === prompt.id;
-                    return (
-                      <Tooltip key={prompt.id}>
-                        <TooltipTrigger
-                          render={
-                            <button
-                              type="button"
-                              onClick={() => handleSelectPrompt(prompt)}
-                              className={cn(
-                                "group flex cursor-pointer items-start gap-3 rounded-lg border-2 border-border p-3 text-left transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                                isSelected
-                                  ? "translate-x-[1px] translate-y-[1px] bg-primary text-primary-foreground shadow-hard"
-                                  : "bg-card text-foreground shadow-hard-sm hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-muted hover:shadow-hard active:translate-x-[2px] active:translate-y-[2px]",
-                              )}
-                            />
-                          }
-                        >
-                          <div
-                            className={cn(
-                              "flex size-7 shrink-0 items-center justify-center rounded-md border border-border shadow-[1px_1px_0px_0px_var(--border)] transition-colors",
-                              isSelected
-                                ? "bg-card text-foreground"
-                                : "bg-primary text-primary-foreground group-hover:bg-primary",
-                            )}
-                          >
-                            <Icon className="size-3.5 stroke-[2.5]" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="mb-0.5 flex items-center gap-1.5">
-                              <span
-                                className={cn(
-                                  "text-[10px] font-black tracking-wider uppercase",
-                                  isSelected ? "text-primary-foreground/80" : "text-muted-foreground",
-                                )}
-                              >
-                                {prompt.category}
-                              </span>
-                            </div>
-                            <p className="text-xs leading-snug font-bold sm:text-sm">{prompt.text}</p>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">
-                          <span>Tính năng AI đang hoàn thiện</span>
-                        </TooltipContent>
-                      </Tooltip>
-                    );
-                  })}
-                </div>
-              </TooltipProvider>
-            </div>
-
-            {/* Simulated Interactive Dialog when a prompt is clicked */}
-            {selectedPrompt && (
-              <div className="animate-in space-y-4 pt-2 fade-in-50 slide-in-from-bottom-2">
-                {/* User query bubble */}
-                <div className="flex justify-end">
-                  <div className="max-w-md rounded-2xl rounded-tr-sm border-2 border-border bg-primary p-3.5 text-xs font-bold text-primary-foreground shadow-hard sm:text-sm">
-                    {selectedPrompt.text}
-                  </div>
-                </div>
-
-                {/* AI response preview bubble */}
-                <div className="flex items-start gap-3">
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border-2 border-border bg-primary font-black text-primary-foreground shadow-hard-sm">
-                    <Bot className="size-4 stroke-[2.5]" />
-                  </div>
-
-                  <div className="w-full max-w-xl space-y-3 rounded-2xl rounded-tl-sm border-2 border-border bg-muted p-4 shadow-hard-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-foreground">Trợ lý AI Cà phê An Thượng</span>
-                      <button
-                        type="button"
-                        onClick={handleReset}
-                        className="flex cursor-pointer items-center gap-1 text-[11px] font-bold text-muted-foreground hover:text-foreground"
-                      >
-                        <RotateCcw className="size-3 stroke-[2.5]" />
-                        Đặt lại
-                      </button>
-                    </div>
-
-                    <p className="text-xs leading-relaxed font-medium text-foreground sm:text-sm">{demoNotice}</p>
-
-                    <div className="rounded-md border border-border bg-card p-2.5 text-[11px] font-semibold text-muted-foreground">
-                      📌 <strong>Lộ trình RAG</strong>: Dữ liệu câu hỏi này sẽ được truy xuất tự động từ hệ thống
-                      Medallion (bảng Silver `shop_facility` và View Gold `v_typical_price_v2`) khi ra mắt.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Chatbox Input Footer */}
-          <div className="rounded-lg border-2 border-border bg-card p-3 shadow-hard-sm">
-            <div className="relative flex items-center gap-2">
-              <Input
-                type="text"
-                disabled
-                value={selectedPrompt ? selectedPrompt.text : ""}
-                placeholder="Hỏi bất kỳ điều gì về quán cafe An Thượng..."
-                className="h-11 bg-background pr-24 text-xs font-medium text-foreground disabled:cursor-not-allowed disabled:opacity-75 sm:text-sm"
-              />
-
-              <div className="absolute right-14 hidden sm:block">
-                <Badge variant="outline" className="text-[10px] font-bold">
-                  SẮP RA MẮT
-                </Badge>
-              </div>
-
-              <Button
+      <div className="space-y-2.5">
+        <div className="flex items-center gap-1.5 text-xs font-extrabold tracking-wide text-foreground uppercase">
+          <Sparkles className="size-3.5 stroke-[2.5]" />
+          Gợi ý câu hỏi
+        </div>
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          {SUGGESTED_PROMPTS.map((prompt) => {
+            const Icon = prompt.icon;
+            return (
+              <button
+                key={prompt.id}
                 type="button"
-                disabled
-                variant="default"
-                size="icon"
-                className="size-11 shrink-0 cursor-not-allowed opacity-60"
-                aria-label="Gửi câu hỏi (đang phát triển)"
+                disabled={disabled}
+                onClick={() => onPick(prompt.text)}
+                className="group flex cursor-pointer items-start gap-3 rounded-lg border-2 border-border bg-card p-3 text-left shadow-hard-sm transition-all outline-none hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard focus-visible:ring-2 focus-visible:ring-ring active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-50"
               >
-                <Send className="size-4 stroke-[2.5]" />
-              </Button>
-            </div>
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-md border-2 border-border bg-primary text-primary-foreground">
+                  <Icon className="size-4 stroke-[2.5]" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[10px] font-black tracking-wider text-muted-foreground uppercase">
+                    {prompt.category}
+                  </span>
+                  <span className="block text-sm leading-snug font-bold text-foreground">{prompt.text}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-            <p className="mt-2 text-center text-xs font-semibold text-muted-foreground">
-              Tính năng AI & Chatbot RAG đang được phát triển cho bản cập nhật tiếp theo.
-            </p>
-          </div>
+export function AskAiView() {
+  const { messages, status, quota, send, stop, reset } = useAskAi();
+  const [input, setInput] = React.useState("");
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const stickToBottomRef = React.useRef(true);
+
+  const busy = status !== "idle";
+  const outOfQuota = quota !== null && quota.remaining <= 0;
+  const resetTime = formatResetTime(quota?.resetAt ?? null);
+  const lastMessageId = messages[messages.length - 1]?.id;
+
+  // Tự cuộn xuống cuối khi có nội dung mới, trừ khi người dùng đang cuộn lên đọc lại.
+  React.useEffect(() => {
+    const el = scrollRef.current;
+    if (el && stickToBottomRef.current) el.scrollTop = el.scrollHeight;
+  }, [messages]);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (el) stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  };
+
+  const submit = (text: string) => {
+    if (busy || outOfQuota || !text.trim()) return;
+    stickToBottomRef.current = true;
+    setInput("");
+    void send(text);
+  };
+
+  return (
+    <div className="mx-auto flex h-[calc(100dvh-7.5rem)] min-h-[30rem] max-w-4xl flex-col px-4 pt-4 md:h-[calc(100dvh-2rem)] md:pt-6">
+      {/* Tiêu đề trang */}
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 md:mb-4">
+        <div className="min-w-0">
+          <h1 className="font-heading text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">Hỏi AI</h1>
+          <p className="text-xs font-medium text-muted-foreground sm:text-sm">
+            Trợ lý trả lời từ dữ liệu thật của 115 quán cafe An Thượng.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <QuotaMeter quota={quota} />
+          {messages.length > 0 && (
+            <Button type="button" variant="outline" size="sm" onClick={reset}>
+              <RotateCcw className="stroke-[2.5]" />
+              Chat mới
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Khung chat */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border-2 border-border bg-background shadow-hard-card">
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-muted/40 p-3 sm:p-5"
+          aria-live="polite"
+        >
+          {messages.length === 0 ? (
+            <EmptyState disabled={busy || outOfQuota} onPick={submit} />
+          ) : (
+            messages.map((message) => (
+              <MessageBubble key={message.id} message={message} isStreaming={busy && message.id === lastMessageId} />
+            ))
+          )}
+        </div>
+
+        {/* Ô nhập */}
+        <div className="border-t-2 border-border bg-card p-3">
+          {outOfQuota ? (
+            <div
+              role="status"
+              className="flex items-start gap-2 rounded-lg border-2 border-border bg-primary/30 px-3 py-2.5 text-xs font-bold text-foreground sm:text-sm"
+            >
+              <CircleAlert className="mt-0.5 size-4 shrink-0 stroke-[2.5]" />
+              <span>
+                Bạn đã dùng hết {quota.max} lượt hỏi miễn phí hôm nay
+                {resetTime ? ` — lượt mới mở lại lúc ${resetTime}` : ""}. Trong lúc chờ, bạn có thể dùng bộ lọc ở trang
+                Khám phá.
+              </span>
+            </div>
+          ) : (
+            <form
+              className="flex items-center gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                submit(input);
+              }}
+            >
+              <Input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(event) => setInput(event.target.value)}
+                maxLength={MAX_INPUT_CHARS}
+                enterKeyHint="send"
+                autoComplete="off"
+                aria-label="Câu hỏi cho trợ lý AI"
+                placeholder="Hỏi về quán, giá đồ uống, tiện ích…"
+                className="h-11 flex-1 bg-background text-sm font-medium"
+              />
+              {busy ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-lg"
+                  onClick={stop}
+                  aria-label="Dừng trả lời"
+                  className="shrink-0"
+                >
+                  <Square className="size-4 fill-current stroke-[2.5]" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  size="icon-lg"
+                  disabled={!input.trim()}
+                  aria-label="Gửi câu hỏi"
+                  className="shrink-0"
+                >
+                  <Send className="size-4 stroke-[2.5]" />
+                </Button>
+              )}
+            </form>
+          )}
+          <p className="mt-2 text-center text-[11px] font-medium text-muted-foreground">
+            AI có thể trả lời sai — hãy mở trang quán để kiểm tra lại. Máy lạnh và ổ cắm là thông tin suy luận từ
+            review.
+          </p>
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ export function PriceDistribution({ priceRanges, totalShops }: PriceDistribution
   return (
     <div className="rounded-lg border-2 border-border bg-card p-6 shadow-hard-card md:p-8">
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-3">
         <div>
           <div className="flex items-center gap-2">
             <div className="flex size-7 items-center justify-center rounded-md border-2 border-border bg-primary text-primary-foreground shadow-hard-sm">

@@ -11,9 +11,9 @@ export const siteConfig = {
   nav: [
     { label: "Khám phá", href: "/", icon: "Compass" },
     { label: "Bản đồ", href: "/ban-do", icon: "Map" },
-    { label: "Hỏi AI", href: "/hoi-ai", icon: "Sparkles", badge: "Soon" },
+    { label: "Hỏi AI", href: "/hoi-ai", icon: "Sparkles" },
     { label: "Phân tích", href: "/phan-tich", icon: "BarChart3" },
-    { label: "Insights", href: "/insights", icon: "Lightbulb", badge: "Soon" },
+    { label: "Insights", href: "/insights", icon: "Lightbulb" },
   ],
 } as const;
 

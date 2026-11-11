@@ -5,6 +5,7 @@ import { ArrowRight, Coffee, Laptop, MapPin, Plug, Snowflake, Star, Wifi } from 
 
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { resizeGoogleImage } from "@/lib/image-url";
 import { cn } from "@/lib/utils";
 import type { CafeCard } from "@/server/db";
 
@@ -48,10 +49,10 @@ export function MapCafeCard({ cafe, isSelected, isHovered, onSelect, onHover }: 
           {cafe.featuredImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={cafe.featuredImage}
+              src={resizeGoogleImage(cafe.featuredImage, 240, 240) ?? undefined}
               alt={cafe.name}
               loading="lazy"
-              className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="size-full object-cover text-transparent transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="flex size-full items-center justify-center bg-primary/20">

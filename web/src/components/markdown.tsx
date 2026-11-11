@@ -143,7 +143,10 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
       );
     } else if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
       nodes.push(
-        <code key={key} className="rounded-sm border border-border bg-muted px-1 py-px font-mono text-[0.85em] font-semibold">
+        <code
+          key={key}
+          className="rounded-sm border border-border bg-muted px-1 py-px font-mono text-[0.85em] font-semibold"
+        >
           {part.slice(1, -1)}
         </code>,
       );
@@ -192,7 +195,7 @@ export interface MarkdownProps {
 }
 
 export function Markdown({ content, size = "compact", className }: MarkdownProps) {
-  const blocks = React.useMemo(() => parseBlocks(content), [content]);
+  const blocks = parseBlocks(content);
   const article = size === "article";
 
   return (
@@ -248,7 +251,7 @@ export function Markdown({ content, size = "compact", className }: MarkdownProps
           case "table":
             return (
               <div key={key} className="overflow-x-auto rounded-lg border-2 border-border bg-card shadow-hard-sm">
-                <table className="w-full min-w-max border-collapse text-left text-xs sm:text-sm">
+                <table className="w-full border-collapse text-left text-xs sm:text-sm">
                   <thead className="bg-primary text-primary-foreground">
                     <tr>
                       {block.header.map((cell, cellIndex) => (

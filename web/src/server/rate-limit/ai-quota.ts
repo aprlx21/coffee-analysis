@@ -6,6 +6,9 @@ import { headers } from "next/headers";
 import { env } from "@/lib/env";
 import { getSql } from "@/server/db/client";
 
+/** Số lượt hỏi AI miễn phí mỗi client trong 24h (issue #12). */
+export const AI_DAILY_QUOTA = 3;
+
 export interface QuotaResult {
   allowed: boolean;
   remaining: number;
@@ -33,7 +36,10 @@ const inMemoryQuota = new Map<string, { used: number; reset_at: string }>();
  * Kiểm tra và tăng lượt hỏi (Atomic) trực tiếp từ stored procedure trên Supabase.
  * Tự động fallback sang in-memory rate-limit nếu database chưa cấu hình hàm.
  */
-export async function checkAndConsumeAiQuota(identifier: string, maxLimit: number = 3): Promise<QuotaResult> {
+export async function checkAndConsumeAiQuota(
+  identifier: string,
+  maxLimit: number = AI_DAILY_QUOTA,
+): Promise<QuotaResult> {
   try {
     const sql = getSql();
     const rows = await sql<{ quota: QuotaResult }[]>`
@@ -70,7 +76,7 @@ export async function checkAndConsumeAiQuota(identifier: string, maxLimit: numbe
 /**
  * Lấy trạng thái quota hiện tại của client mà không làm tăng lượt hỏi.
  */
-export async function getAiQuotaStatus(identifier: string, maxLimit: number = 3): Promise<QuotaResult> {
+export async function getAiQuotaStatus(identifier: string, maxLimit: number = AI_DAILY_QUOTA): Promise<QuotaResult> {
   try {
     const sql = getSql();
     const rows = await sql<{ quota: QuotaResult }[]>`

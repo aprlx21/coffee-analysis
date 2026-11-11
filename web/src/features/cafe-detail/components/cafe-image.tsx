@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Coffee } from "lucide-react";
 
+import { resizeGoogleImage } from "@/lib/image-url";
 import { cn } from "@/lib/utils";
 
 interface CafeImageProps {
@@ -45,11 +46,11 @@ export function CafeImage({ src, name, className }: CafeImageProps) {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={src}
+        src={resizeGoogleImage(src, 960, 720) ?? src}
         alt={name}
         loading="lazy"
         onError={() => setHasError(true)}
-        className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+        className="h-full w-full object-cover text-transparent transition-transform duration-300 hover:scale-105"
       />
     </div>
   );

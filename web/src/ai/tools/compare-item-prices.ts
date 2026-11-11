@@ -51,6 +51,7 @@ export const compareItemPricesTool = tool({
       totalCompared: rows.length,
       cafes: rows.map((r) => ({
         placeId: r.placeId,
+        url: `/quan/${r.placeId}`,
         shopName: r.shopName,
         drinkName: r.displayName,
         priceMin: r.priceMin,

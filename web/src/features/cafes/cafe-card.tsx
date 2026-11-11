@@ -5,6 +5,7 @@ import * as React from "react";
 import { MapPin, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { resizeGoogleImage } from "@/lib/image-url";
 import { cn } from "@/lib/utils";
 import type { CafeCard as CafeCardData } from "@/server/db/types";
 
@@ -55,6 +56,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
   const featuredAmenities = getFeaturedAmenities(cafe);
   const priceDisplay = formatDrinkPrice(cafe);
   const initial = cafe.name ? cafe.name.trim().charAt(0).toUpperCase() : "☕";
+  const imageSrc = resizeGoogleImage(cafe.featuredImage, 640, 400);
 
   if (variant === "compact") {
     return (
@@ -67,14 +69,15 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
         <Link href={`/quan/${cafe.placeId}`} className="block overflow-hidden">
           {/* Thumbnail */}
           <div className="relative aspect-[16/9] w-full overflow-hidden border-b-2 border-border bg-muted">
-            {cafe.featuredImage && !imgError ? (
+            {imageSrc && !imgError ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
-                src={cafe.featuredImage}
+                src={imageSrc}
                 alt={cafe.name}
                 loading="lazy"
+                decoding="async"
                 onError={() => setImgError(true)}
-                className="size-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+                className="size-full object-cover text-transparent transition-transform duration-300 group-hover/card:scale-105"
               />
             ) : (
               <div className="flex size-full items-center justify-center bg-muted text-xl font-black text-muted-foreground">
@@ -127,14 +130,15 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
       >
         {/* Cover image container */}
         <div className="relative aspect-[16/10] w-full overflow-hidden border-b-2 border-border bg-muted">
-          {cafe.featuredImage && !imgError ? (
+          {imageSrc && !imgError ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
-              src={cafe.featuredImage}
+              src={imageSrc}
               alt={cafe.name}
               loading="lazy"
+              decoding="async"
               onError={() => setImgError(true)}
-              className="size-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+              className="size-full object-cover text-transparent transition-transform duration-300 group-hover/card:scale-105"
             />
           ) : (
             <div className="flex size-full flex-col items-center justify-center bg-muted p-4 text-center select-none">
@@ -166,7 +170,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
           {/* Work Score Pill */}
           {cafe.workScore != null && cafe.workScore > 0 && (
             <div className="absolute top-2.5 right-2.5 z-10 rounded-md border-2 border-border bg-card/95 px-1.5 py-0.5 font-mono text-[10px] font-bold text-foreground shadow-hard-sm">
-              Điểm: {cafe.workScore}/100
+              💻 {cafe.workScore}/100
             </div>
           )}
         </div>
