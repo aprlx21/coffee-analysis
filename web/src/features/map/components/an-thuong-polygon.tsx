@@ -13,7 +13,7 @@ import { Polygon, Tooltip } from "react-leaflet";
 export const AN_THUONG_CORE_BOUNDS: [number, number][] = [
   [16.0562, 108.2435], // Góc Bắc - Đông (Nguyễn Văn Thoại & Võ Nguyên Giáp ven biển)
   [16.0465, 108.2465], // Góc Nam - Đông (Hoàng Kế Viêm & Võ Nguyên Giáp)
-  [16.0450, 108.2425], // Góc Nam - Tây (Hoàng Kế Viêm & Lê Quang Đạo)
+  [16.045, 108.2425], // Góc Nam - Tây (Hoàng Kế Viêm & Lê Quang Đạo)
   [16.0545, 108.2395], // Góc Bắc - Tây (Nguyễn Văn Thoại & Lê Quang Đạo)
 ];
 

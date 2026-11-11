@@ -13,10 +13,7 @@ import { cardColumns, orderBy } from "./cafes";
  * Lấy toàn bộ danh sách quán (không phân trang) cho màn hình bản đồ.
  * Chỉ tốn 1 query duy nhất thay vì N query lặp lại.
  */
-export async function getAllMapCafes(
-  filters: CafeFilters,
-  sort: SortKey = filters.sort,
-): Promise<CafeCard[]> {
+export async function getAllMapCafes(filters: CafeFilters, sort: SortKey = filters.sort): Promise<CafeCard[]> {
   "use cache";
   cacheLife("hours");
 

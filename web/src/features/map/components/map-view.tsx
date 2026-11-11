@@ -28,12 +28,15 @@ export function MapView({ points, selectedPlaceId, hoveredPlaceId, onSelectPoint
         scrollWheelZoom={true}
         className="z-0 size-full"
       >
-        {/* Bản đồ phố CARTO Voyager tiêu chuẩn: Đẹp, rõ nét tên đường, công viên, bờ biển */}
+        {/*
+          Esri World Street Map — không cần API key.
+          KHÔNG dùng basemaps.cartocdn.com: CARTO đã bắt buộc API key, tile trả về hình chữ "API KEY REQUIRED".
+        */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-          subdomains="abcd"
+          attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>, HERE, Garmin, OpenStreetMap contributors'
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
           maxZoom={MAX_ZOOM}
+          maxNativeZoom={18}
         />
 
         {/* Vùng lõi Phố Du lịch An Thượng */}
