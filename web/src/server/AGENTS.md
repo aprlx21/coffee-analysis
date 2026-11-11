@@ -22,7 +22,7 @@ DB là Supabase Postgres, dùng **postgres.js** (`postgres`), KHÔNG phải Driz
 - Bộ lọc: `CafeFilters` + `parseCafeFilters(searchParams)` + `cafeFiltersToSearchParams` ở `@/features/cafes`. Amenities lọc AND; `item` + `maxItemPrice` lọc theo `v_typical_price_v2`.
 - Nguồn: view `v_cafe_directory` (SQL ở `web/sql/`, issue #1) và `v_typical_price_v2`. Số nguyên/số thực đã ép về `number` trong SQL (`::float8`/`::int`).
 - Giá trị `has_ac`/`has_outlets` là suy luận từ review: UI phải gắn nhãn "suy luận từ review".
-- Test nhanh: tạo route handler tạm gọi các hàm trên rồi xoá (không commit); kỳ vọng 115 quán, `has_wifi` = 84.
+- Test nhanh: tạo route handler tạm gọi các hàm trên rồi xoá (không commit); kỳ vọng 115 quán, `has_wifi` = 43 (con số 84 trong issue đếm dòng option, mỗi quán lặp 2 lần).
 
 ## Chỗ dành sẵn (tạo khi cần — đang trống)
 
