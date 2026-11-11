@@ -1,8 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Coffee, Loader2 } from "lucide-react";
 
+import { CoffeeRunningLoader } from "@/components/coffee-running-loader";
 import type { MapViewProps } from "./map-view";
 
 function MapLoadingSkeleton() {
@@ -18,17 +18,11 @@ function MapLoadingSkeleton() {
       />
 
       <div className="relative z-10 flex flex-col items-center gap-3 rounded-2xl glass-strong p-6 text-center shadow-glass-lg">
-        <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glass-sm">
-          <Coffee className="size-6 stroke-[2]" />
-        </div>
-        <div>
-          <h3 className="font-heading text-base font-bold text-foreground">Đang tải bản đồ An Thượng</h3>
-          <p className="text-xs font-medium text-muted-foreground">Đang kết nối toạ độ các quán cafe...</p>
-        </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-          <Loader2 className="size-4 animate-spin text-primary" />
-          <span>Vui lòng đợi giây lát</span>
-        </div>
+        <CoffeeRunningLoader
+          size="md"
+          title="Đang tải bản đồ An Thượng..."
+          subtitle="Cappuccino Ninja đang kết nối toạ độ các quán cafe ☕"
+        />
       </div>
     </div>
   );

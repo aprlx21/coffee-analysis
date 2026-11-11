@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Coffee, Loader2 } from "lucide-react";
 
+import { CoffeeRunningLoader } from "@/components/coffee-running-loader";
 import { parseCafeFilters } from "@/features/cafes/schema";
 import { MapPageView } from "@/features/map";
 import { getAllMapCafes } from "@/server/db";
@@ -19,17 +19,11 @@ function MapPageSkeleton() {
         {/* Left skeleton (map) */}
         <div className="relative flex size-full items-center justify-center border-border bg-muted/60 md:w-[58%] md:border-r">
           <div className="flex flex-col items-center gap-3 rounded-2xl glass-strong p-6 text-center shadow-glass-lg">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glass-sm">
-              <Coffee className="size-6 stroke-[2]" />
-            </div>
-            <div>
-              <h3 className="font-heading text-base font-bold text-foreground">Đang tải bản đồ An Thượng</h3>
-              <p className="text-xs font-medium text-muted-foreground">Đang đồng bộ dữ liệu quán cafe...</p>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-              <Loader2 className="size-4 animate-spin text-primary" />
-              <span>Vui lòng đợi giây lát</span>
-            </div>
+            <CoffeeRunningLoader
+              size="md"
+              title="Đang tải bản đồ An Thượng..."
+              subtitle="Cappuccino Ninja đang đồng bộ toạ độ 115 quán cafe ☕"
+            />
           </div>
         </div>
 
