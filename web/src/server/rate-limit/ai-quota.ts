@@ -27,24 +27,68 @@ export async function getClientIdentifier(): Promise<string> {
   return createHash("sha256").update(`${ip}:${userAgent}:${env.RATE_LIMIT_SALT}`).digest("hex");
 }
 
+const inMemoryQuota = new Map<string, { used: number; reset_at: string }>();
+
 /**
  * Kiểm tra và tăng lượt hỏi (Atomic) trực tiếp từ stored procedure trên Supabase.
+ * Tự động fallback sang in-memory rate-limit nếu database chưa cấu hình hàm.
  */
 export async function checkAndConsumeAiQuota(identifier: string, maxLimit: number = 3): Promise<QuotaResult> {
-  const sql = getSql();
-  const rows = await sql<{ quota: QuotaResult }[]>`
-    SELECT check_and_consume_ai_quota(${identifier}, ${maxLimit}) as quota
-  `;
-  return rows[0].quota;
+  try {
+    const sql = getSql();
+    const rows = await sql<{ quota: QuotaResult }[]>`
+      SELECT check_and_consume_ai_quota(${identifier}, ${maxLimit}) as quota
+    `;
+    if (rows?.[0]?.quota) return rows[0].quota;
+  } catch (err) {
+    console.warn("DB rate-limit unavailable, using in-memory fallback:", err);
+  }
+
+  const now = new Date();
+  const reset = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
+  const current = inMemoryQuota.get(identifier) || { used: 0, reset_at: reset };
+  if (current.used < maxLimit) {
+    current.used += 1;
+    inMemoryQuota.set(identifier, current);
+    return {
+      allowed: true,
+      remaining: maxLimit - current.used,
+      used: current.used,
+      max: maxLimit,
+      reset_at: current.reset_at,
+    };
+  }
+  return {
+    allowed: false,
+    remaining: 0,
+    used: current.used,
+    max: maxLimit,
+    reset_at: current.reset_at,
+  };
 }
 
 /**
  * Lấy trạng thái quota hiện tại của client mà không làm tăng lượt hỏi.
  */
 export async function getAiQuotaStatus(identifier: string, maxLimit: number = 3): Promise<QuotaResult> {
-  const sql = getSql();
-  const rows = await sql<{ quota: QuotaResult }[]>`
-    SELECT get_ai_quota_status(${identifier}, ${maxLimit}) as quota
-  `;
-  return rows[0].quota;
+  try {
+    const sql = getSql();
+    const rows = await sql<{ quota: QuotaResult }[]>`
+      SELECT get_ai_quota_status(${identifier}, ${maxLimit}) as quota
+    `;
+    if (rows?.[0]?.quota) return rows[0].quota;
+  } catch (err) {
+    console.warn("DB rate-limit unavailable, using in-memory fallback:", err);
+  }
+
+  const now = new Date();
+  const reset = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
+  const current = inMemoryQuota.get(identifier) || { used: 0, reset_at: reset };
+  return {
+    allowed: current.used < maxLimit,
+    remaining: Math.max(0, maxLimit - current.used),
+    used: current.used,
+    max: maxLimit,
+    reset_at: current.reset_at,
+  };
 }

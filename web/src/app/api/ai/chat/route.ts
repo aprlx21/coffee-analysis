@@ -1,5 +1,6 @@
 import "server-only";
 
+import { connection } from "next/server";
 import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from "ai";
 import { z } from "zod";
 
@@ -8,6 +9,7 @@ import {
   compareItemPricesTool,
   getCafeDetailTool,
   getCafeMenuTool,
+  getMarketInsightsTool,
   getModel,
   searchCafesTool,
   systemPrompt,
@@ -19,6 +21,7 @@ const chatRequestSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  await connection();
   if (!aiConfig.enabled) {
     return Response.json(
       {
@@ -77,6 +80,7 @@ export async function POST(req: Request) {
         getCafeDetail: getCafeDetailTool,
         getCafeMenu: getCafeMenuTool,
         compareItemPrices: compareItemPricesTool,
+        getMarketInsights: getMarketInsightsTool,
       },
       stopWhen: stepCountIs(4), // Cho phép tối đa 4 bước gọi tool và suy luận
     });
