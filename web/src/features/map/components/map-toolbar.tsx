@@ -219,7 +219,9 @@ export function MapToolbar({
             variant="outline"
             className="h-7 shrink-0 border-border/80 bg-card/80 px-2.5 text-[11px] font-semibold whitespace-nowrap text-foreground shadow-xs"
           >
-            Hiện: <span className="ml-1 font-mono font-bold text-primary">{totalFiltered}</span> / {totalAll} quán
+            <span className="font-mono font-bold text-primary">{totalFiltered}</span>
+            <span className="mx-1 text-muted-foreground">/</span>
+            <span>{totalAll} quán</span>
           </Badge>
         </div>
       </div>
