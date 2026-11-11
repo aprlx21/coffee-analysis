@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
-import { Loader2 } from "lucide-react";
 
 import type { CafeListResult, CanonicalItem, Facets } from "@/server/db/types";
 
@@ -103,9 +103,11 @@ export function CafeExploreClient({ initialFilters, cafesResult, facets, canonic
           {/* Pending transition indicator */}
           <div className="relative">
             {isPending && (
-              <div className="absolute -top-3 right-0 z-20 flex animate-pulse items-center gap-1.5 rounded-full border border-border bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground shadow-glass-sm">
-                <Loader2 className="size-3 animate-spin stroke-[3]" />
-                <span>Đang tải...</span>
+              <div className="absolute -top-3.5 right-0 z-20 flex items-center gap-2 rounded-full border border-primary/40 bg-card/95 px-3 py-1 text-xs font-bold text-foreground shadow-glass-sm backdrop-blur-md">
+                <div className="animate-coffee-run relative size-4">
+                  <Image src="/cappuccino-ninja.png" alt="Ninja loading" width={16} height={16} />
+                </div>
+                <span className="font-semibold text-primary">Ninja đang tải...</span>
               </div>
             )}
 

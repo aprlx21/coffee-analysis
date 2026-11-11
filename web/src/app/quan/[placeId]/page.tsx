@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { CoffeeRunningLoader } from "@/components/coffee-running-loader";
 import {
   AmenitiesList,
   CafeHeader,
@@ -81,9 +82,23 @@ async function CafeDetailContent({ params }: PageProps) {
   );
 }
 
+function CafeDetailSkeleton() {
+  return (
+    <div className="mx-auto flex min-h-[60vh] max-w-5xl items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md rounded-3xl border border-border/80 glass-strong p-8 text-center shadow-glass-lg">
+        <CoffeeRunningLoader
+          size="md"
+          title="Đang tải chi tiết quán cafe..."
+          subtitle="Cappuccino Ninja đang chuẩn bị thực đơn và thông tin tiện ích ☕"
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function CafeDetailPage(props: PageProps) {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-5xl px-4 py-8">Đang tải chi tiết quán...</div>}>
+    <Suspense fallback={<CafeDetailSkeleton />}>
       <CafeDetailContent {...props} />
     </Suspense>
   );
