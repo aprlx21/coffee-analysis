@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function GlobalErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
@@ -39,12 +40,10 @@ export default function GlobalErrorPage({ error, reset }: { error: Error & { dig
             Thử lại
           </Button>
 
-          <Button asChild variant="outline">
-            <Link href="/" className="gap-2">
-              <Home className="size-4" />
-              Về trang chủ
-            </Link>
-          </Button>
+          <Link href="/" className={cn(buttonVariants({ variant: "outline" }), "gap-2")}>
+            <Home className="size-4" />
+            Về trang chủ
+          </Link>
         </div>
       </div>
     </div>
