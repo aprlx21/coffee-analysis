@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,15 +20,26 @@ export interface CafeGridProps {
 export function CafeGrid({ items, viewMode, total, onReset, className }: CafeGridProps) {
   if (items.length === 0 || total === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl glass p-8 text-center shadow-glass-card md:p-14">
-        <div className="mb-4 flex size-16 items-center justify-center rounded-lg border border-border bg-primary text-3xl font-bold text-primary-foreground shadow-glass">
-          ☕
+      <div className="flex flex-col items-center justify-center rounded-2xl glass p-8 text-center shadow-glass-card md:p-14">
+        {/* Animated Ninja */}
+        <div className="mb-4 flex flex-col items-center justify-center">
+          <div className="animate-coffee-run relative size-24 select-none">
+            <Image
+              src="/cappuccino-ninja.png"
+              alt="Cappuccino Ninja"
+              width={96}
+              height={96}
+              className="drop-shadow-md"
+            />
+          </div>
+          <div className="animate-coffee-shadow mt-1 h-2 w-20 rounded-[50%] bg-foreground/20 blur-[2px]" />
         </div>
         <h3 className="font-heading text-xl font-bold text-foreground">Không tìm thấy quán cafe phù hợp</h3>
         <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
-          Không có quán nào khớp với các điều kiện lọc hiện tại. Thử bỏ bớt tiện ích hoặc xóa từ khóa tìm kiếm xem nhé!
+          Cappuccino Ninja chưa tìm thấy quán nào khớp với các điều kiện lọc hiện tại. Thử bỏ bớt tiện ích hoặc xóa từ
+          khóa tìm kiếm nhé!
         </p>
-        <Button variant="default" onClick={onReset} className="mt-6 font-bold shadow-glass-sm">
+        <Button variant="default" onClick={onReset} className="mt-6 cursor-pointer font-bold shadow-glass-sm">
           <RotateCcw className="mr-1.5 size-4 stroke-[2.5]" />
           XÓA TẤT CẢ BỘ LỌC
         </Button>
