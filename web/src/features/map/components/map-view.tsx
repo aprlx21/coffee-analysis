@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef } from "react";
-import { LayersControl, MapContainer, TileLayer } from "react-leaflet";
+import React, { useRef, useState } from "react";
+import { LayersControl, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 
 import type { CafeCard } from "@/server/db";
 import {
@@ -30,6 +30,15 @@ export interface MapViewProps {
   coreCount?: number;
 }
 
+function BaseLayerTracker({ onLayerChange }: { onLayerChange: (name: string) => void }) {
+  useMapEvents({
+    baselayerchange: (e) => {
+      onLayerChange(e.name);
+    },
+  });
+  return null;
+}
+
 export function MapView({
   cafes,
   colorMode,
@@ -40,6 +49,9 @@ export function MapView({
   coreCount = 68,
 }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [activeLayerName, setActiveLayerName] = useState<string>(TILE_LAYERS[0].name);
+
+  const isSatellite = activeLayerName.toLowerCase().includes("vệ tinh");
 
   return (
     <div ref={containerRef} className="relative size-full overflow-hidden bg-muted">
@@ -52,6 +64,9 @@ export function MapView({
         scrollWheelZoom={true}
         className="z-0 size-full"
       >
+        {/* Lắng nghe sự kiện chuyển đổi giữa các lớp bản đồ (Vệ tinh, Đường phố, OSM) */}
+        <BaseLayerTracker onLayerChange={setActiveLayerName} />
+
         {/* Base Layer Switcher (L.control.layers, bottomright - góc dưới phải) */}
         <LayersControl position="bottomright">
           <LayersControl.BaseLayer checked name={TILE_LAYERS[0].name}>
@@ -80,8 +95,8 @@ export function MapView({
           </LayersControl.BaseLayer>
         </LayersControl>
 
-        {/* Lớp phủ bản đồ: Vành đai, Siêu lõi, Bờ biển Mỹ Khê */}
-        <MapOverlays coreCount={coreCount} />
+        {/* Lớp phủ bản đồ: Vành đai, Siêu lõi, Bờ biển Mỹ Khê (Tự động thích ứng màu khi sang Vệ tinh) */}
+        <MapOverlays coreCount={coreCount} isSatellite={isSatellite} />
 
         {/* Markers quán cafe (Rời rạc hoặc Gom cụm) */}
         <MapMarkers
