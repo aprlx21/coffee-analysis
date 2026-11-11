@@ -11,8 +11,8 @@
 ## 1b. Ai làm gì
 | Thực hiện | Issue |
 |---|---|
-| **Antigravity** | App shell · Khám phá (lọc + lưới) · Chi tiết quán · Hỏi AI (soon) · Phân tích + Insights (soon) |
-| **Claude Opus** | SQL view `v_cafe_directory` · Data Access Layer · Bản đồ Leaflet · **review mọi PR** trước khi merge |
+| **Antigravity** | App shell · Khám phá (lọc + lưới) · Chi tiết quán · Bản đồ Leaflet · Hỏi AI (soon) · Phân tích + Insights (soon) |
+| **Claude Opus** | SQL view `v_cafe_directory` · Data Access Layer · **review mọi PR** trước khi merge |
 
 Antigravity mở PR xong → nhắn Claude: `Review PR #<n>` (kiểm tra đúng dữ liệu, DESIGN.md, pnpm check/build, mobile 375px).
 
