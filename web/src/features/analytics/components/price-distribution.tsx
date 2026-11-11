@@ -11,15 +11,15 @@ interface PriceDistributionProps {
 
 export function PriceDistribution({ priceRanges, totalShops }: PriceDistributionProps) {
   return (
-    <div className="rounded-lg border-2 border-border bg-card p-6 shadow-hard-card md:p-8">
+    <div className="rounded-xl glass p-6 shadow-glass-card md:p-8">
       {/* Header */}
       <div className="mb-6 flex flex-col gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-md border-2 border-border bg-primary text-primary-foreground shadow-hard-sm">
+            <div className="flex size-7 items-center justify-center rounded-md border border-border bg-primary text-primary-foreground shadow-glass-sm">
               <Coins className="size-4 stroke-[2.5]" />
             </div>
-            <h2 className="font-heading text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">
+            <h2 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Phân bố Khoảng giá
             </h2>
           </div>
@@ -51,13 +51,13 @@ export function PriceDistribution({ priceRanges, totalShops }: PriceDistribution
               </div>
 
               {/* Progress bar container */}
-              <div className="relative h-8 w-full overflow-hidden rounded-lg border-2 border-border bg-muted p-1">
+              <div className="relative h-8 w-full overflow-hidden rounded-lg border border-border bg-muted p-1">
                 <div
-                  className="flex h-full items-center justify-end rounded-sm border border-border bg-primary pr-2 shadow-hard-sm transition-all duration-700"
+                  className="flex h-full items-center justify-end rounded-sm border border-border bg-primary pr-2 shadow-glass-sm transition-all duration-700"
                   style={{ width: `${Math.max(item.percentage, 4)}%` }}
                 >
                   {item.percentage > 12 && (
-                    <span className="font-mono text-xs font-extrabold text-primary-foreground">{item.percentage}%</span>
+                    <span className="font-mono text-xs font-bold text-primary-foreground">{item.percentage}%</span>
                   )}
                 </div>
               </div>
@@ -67,7 +67,7 @@ export function PriceDistribution({ priceRanges, totalShops }: PriceDistribution
       </div>
 
       {/* Insight Note */}
-      <div className="mt-6 flex items-start gap-2.5 rounded-lg border-2 border-border bg-secondary/50 p-4 text-xs text-muted-foreground">
+      <div className="mt-6 flex items-start gap-2.5 rounded-lg border border-border bg-secondary/50 p-4 text-xs text-muted-foreground">
         <HelpCircle className="mt-0.5 size-4 shrink-0 stroke-[2.5] text-foreground" />
         <p className="leading-relaxed font-medium">
           <strong className="text-foreground">Nhận định thị trường:</strong> Hơn 56% quán cafe An Thượng thuộc phân khúc

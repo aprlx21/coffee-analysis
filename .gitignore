@@ -31,3 +31,8 @@ Thumbs.db
 
 # Notebook checkpoints
 .ipynb_checkpoints/
+
+# Script cục bộ chứa chuỗi kết nối Supabase — không commit
+pipeline/update_view.py
+pipeline/setup_storage.py
+pipeline/scrape_real_images.py

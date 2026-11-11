@@ -11,15 +11,15 @@ interface TopAmenitiesProps {
 
 export function TopAmenities({ amenities, totalShops }: TopAmenitiesProps) {
   return (
-    <div className="rounded-lg border-2 border-border bg-card p-6 shadow-hard-card md:p-8">
+    <div className="rounded-xl glass p-6 shadow-glass-card md:p-8">
       {/* Header */}
       <div className="mb-6 flex flex-col gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-md border-2 border-border bg-primary text-primary-foreground shadow-hard-sm">
+            <div className="flex size-7 items-center justify-center rounded-md border border-border bg-primary text-primary-foreground shadow-glass-sm">
               <Sparkles className="size-4 stroke-[2.5]" />
             </div>
-            <h2 className="font-heading text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">
+            <h2 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Phân tích Tiện ích & Cơ sở Vật chất
             </h2>
           </div>
@@ -42,7 +42,7 @@ export function TopAmenities({ amenities, totalShops }: TopAmenitiesProps) {
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="font-heading font-bold text-foreground">{item.label}</span>
                   {item.isInferred && (
-                    <span className="py-0.2 rounded border border-border bg-primary px-1.5 text-[10px] font-extrabold text-primary-foreground uppercase shadow-[1px_1px_0px_0px_var(--border)]">
+                    <span className="py-0.2 rounded border border-border bg-primary px-1.5 text-[10px] font-bold text-primary-foreground uppercase shadow-glass-sm">
                       Theo review
                     </span>
                   )}
@@ -59,9 +59,9 @@ export function TopAmenities({ amenities, totalShops }: TopAmenitiesProps) {
               </div>
 
               {/* Progress bar */}
-              <div className="relative h-6 w-full overflow-hidden rounded-md border-2 border-border bg-muted p-0.5">
+              <div className="relative h-6 w-full overflow-hidden rounded-md border border-border bg-muted p-0.5">
                 <div
-                  className="h-full rounded-xs border border-border bg-primary shadow-hard-sm transition-all duration-700"
+                  className="h-full rounded-xs border border-border bg-primary shadow-glass-sm transition-all duration-700"
                   style={{ width: `${Math.max(item.percentage, 3)}%` }}
                 />
               </div>
@@ -71,7 +71,7 @@ export function TopAmenities({ amenities, totalShops }: TopAmenitiesProps) {
       </div>
 
       {/* Methodological Callout */}
-      <div className="mt-8 flex items-start gap-3 rounded-lg border-2 border-border bg-secondary/60 p-4 text-xs text-foreground shadow-hard-sm">
+      <div className="mt-8 flex items-start gap-3 rounded-lg border border-border bg-secondary/60 p-4 text-xs text-foreground shadow-glass-sm">
         <Info className="mt-0.5 size-4 shrink-0 rounded bg-primary stroke-[2.5] p-0.5 text-primary-foreground" />
         <div className="space-y-1">
           <p className="font-bold text-foreground">ℹ️ Lưu ý phương pháp luận trích xuất tiện ích:</p>

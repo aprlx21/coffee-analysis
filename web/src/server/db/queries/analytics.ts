@@ -1,6 +1,8 @@
 import "server-only";
 
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
+
+import { CACHE_TAG_CAFES } from "../cache-tags";
 
 import { getSql } from "../client";
 import type { AnalyticsData, BenchmarkDrinkItem } from "../types";
@@ -14,7 +16,8 @@ import type { AnalyticsData, BenchmarkDrinkItem } from "../types";
  */
 export async function getAnalyticsData(): Promise<AnalyticsData> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("days");
+  cacheTag(CACHE_TAG_CAFES);
 
   try {
     const sql = getSql();

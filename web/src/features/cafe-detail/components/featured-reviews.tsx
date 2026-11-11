@@ -33,11 +33,8 @@ export function FeaturedReviews({ featuredReviews, className }: FeaturedReviewsP
   }
 
   return (
-    <div
-      data-slot="featured-reviews-card"
-      className={cn("rounded-lg border-2 border-border bg-card p-4 shadow-hard-card sm:p-6", className)}
-    >
-      <div className="flex items-center gap-2 border-b-2 border-border pb-4">
+    <div data-slot="featured-reviews-card" className={cn("rounded-xl glass p-4 shadow-glass-card sm:p-6", className)}>
+      <div className="flex items-center gap-2 border-b border-border pb-4">
         <MessageSquareQuote className="size-5 stroke-[2.5] text-foreground" />
         <h2 className="font-heading text-lg font-bold text-foreground">Đánh giá nổi bật ({reviews.length})</h2>
       </div>
@@ -47,11 +44,11 @@ export function FeaturedReviews({ featuredReviews, className }: FeaturedReviewsP
           return (
             <div
               key={index}
-              className="bg-surface flex flex-col gap-3 rounded-lg border-2 border-border p-4 shadow-hard-sm"
+              className="bg-surface flex flex-col gap-3 rounded-lg border border-border p-4 shadow-glass-sm"
             >
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/40 pb-2.5">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex size-8 items-center justify-center rounded-full border-2 border-border bg-primary font-bold text-primary-foreground">
+                  <div className="flex size-8 items-center justify-center rounded-full border border-border bg-primary font-bold text-primary-foreground">
                     <User className="size-4 stroke-[2.5]" />
                   </div>
                   <div>

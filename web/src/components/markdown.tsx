@@ -1,4 +1,5 @@
 import Link from "next/link";
+import katex from "katex";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -6,7 +7,9 @@ import { cn } from "@/lib/utils";
 /**
  * Trình hiển thị Markdown tối giản (không phụ thuộc thư viện ngoài), style theo DESIGN.md.
  * Hỗ trợ: tiêu đề, danh sách, bảng, code fence, trích dẫn, đường kẻ, **đậm**, *nghiêng*, `code`, [link](url).
+ * Công thức toán: `$...$` (inline) và khối `$$...$$` (display), render bằng KaTeX ở chế độ MathML (không cần CSS KaTeX).
  * Không render HTML thô — mọi nội dung đều đi qua React nên an toàn với output của LLM.
+ * Riêng HTML của công thức lấy từ KaTeX với trust: false, nên không có \href/\url hay lệnh có side effect.
  */
 
 type Block =
@@ -16,6 +19,7 @@ type Block =
   | { type: "table"; header: string[]; rows: string[][] }
   | { type: "code"; text: string }
   | { type: "quote"; text: string }
+  | { type: "math"; text: string }
   | { type: "hr" };
 
 const LIST_RE = /^(\s*)([-*•]|\d+[.)])\s+(.*)$/;
@@ -32,6 +36,17 @@ function splitRow(line: string): string[] {
     .map((cell) => cell.trim());
 }
 
+/** Trả về index dòng kết thúc của khối `$$...$$` bắt đầu tại `start`, hoặc -1 nếu không phải khối hợp lệ. */
+function mathBlockEnd(lines: string[], start: number): number {
+  const trimmed = lines[start].trim();
+  if (!trimmed.startsWith("$$")) return -1;
+  if (trimmed.length >= 4 && trimmed.endsWith("$$")) return start;
+  for (let j = start + 1; j < lines.length; j++) {
+    if (lines[j].trim().endsWith("$$")) return j;
+  }
+  return -1;
+}
+
 function parseBlocks(source: string): Block[] {
   const lines = source.replace(/\r\n?/g, "\n").split("\n");
   const blocks: Block[] = [];
@@ -42,6 +57,20 @@ function parseBlocks(source: string): Block[] {
 
     if (!line.trim()) {
       i++;
+      continue;
+    }
+
+    const mathEnd = mathBlockEnd(lines, i);
+    if (mathEnd !== -1) {
+      const tex = lines
+        .slice(i, mathEnd + 1)
+        .join("\n")
+        .trim()
+        .replace(/^\$\$/, "")
+        .replace(/\$\$$/, "")
+        .trim();
+      blocks.push({ type: "math", text: tex });
+      i = mathEnd + 1;
       continue;
     }
 
@@ -113,7 +142,8 @@ function parseBlocks(source: string): Block[] {
       !LIST_RE.test(lines[i]) &&
       !HR_RE.test(lines[i]) &&
       !lines[i].trim().startsWith("```") &&
-      !lines[i].trimStart().startsWith(">")
+      !lines[i].trimStart().startsWith(">") &&
+      mathBlockEnd(lines, i) === -1
     ) {
       buf.push(lines[i++].trim());
     }
@@ -129,7 +159,57 @@ function isSafeHref(href: string): boolean {
   return href.startsWith("/") || /^https?:\/\//i.test(href) || href.startsWith("tel:");
 }
 
+/**
+ * Công thức inline `$...$`: ký tự sau `$` mở không được là khoảng trắng, ký tự trước `$` đóng không phải khoảng trắng,
+ * và không có chữ số ngay sau `$` đóng — để tránh nhầm với tiền tệ kiểu "35$" hoặc "$5 và $10".
+ * Được tách TRƯỚC INLINE_RE nên `*` / `_` bên trong công thức không bị coi là nhấn mạnh.
+ */
+const INLINE_MATH_RE = /(?<![$\\])\$(?!\s)([^$\n]*?[^\s$\\])\$(?!\d)/g;
+
+function renderMathHtml(tex: string, displayMode: boolean): string | null {
+  try {
+    return katex.renderToString(tex, {
+      output: "mathml",
+      throwOnError: false,
+      displayMode,
+      trust: false,
+      strict: "ignore",
+    });
+  } catch {
+    return null;
+  }
+}
+
 function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  let last = 0;
+  let segment = 0;
+
+  for (const match of text.matchAll(INLINE_MATH_RE)) {
+    const start = match.index ?? 0;
+    if (start > last) {
+      nodes.push(...renderEmphasis(text.slice(last, start), `${keyPrefix}-t${segment}`));
+    }
+    const key = `${keyPrefix}-m${segment}`;
+    const html = renderMathHtml(match[1], false);
+    nodes.push(
+      html === null ? (
+        <React.Fragment key={key}>{match[0]}</React.Fragment>
+      ) : (
+        <span key={key} dangerouslySetInnerHTML={{ __html: html }} />
+      ),
+    );
+    last = start + match[0].length;
+    segment++;
+  }
+
+  if (last < text.length) {
+    nodes.push(...renderEmphasis(text.slice(last), `${keyPrefix}-t${segment}`));
+  }
+  return nodes;
+}
+
+function renderEmphasis(text: string, keyPrefix: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
   text.split(INLINE_RE).forEach((part, index) => {
     if (!part) return;
@@ -137,7 +217,7 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
 
     if ((part.startsWith("**") && part.endsWith("**")) || (part.startsWith("__") && part.endsWith("__"))) {
       nodes.push(
-        <strong key={key} className="font-extrabold text-foreground">
+        <strong key={key} className="font-bold text-foreground">
           {renderInline(part.slice(2, -2), key)}
         </strong>,
       );
@@ -179,10 +259,10 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
 }
 
 const HEADING_CLASS: Record<number, string> = {
-  1: "text-xl font-extrabold tracking-tight sm:text-2xl",
-  2: "text-lg font-extrabold tracking-tight sm:text-xl",
-  3: "text-base font-extrabold",
-  4: "text-sm font-extrabold uppercase tracking-wide",
+  1: "text-xl font-bold tracking-tight sm:text-2xl",
+  2: "text-lg font-bold tracking-tight sm:text-xl",
+  3: "text-base font-bold",
+  4: "text-sm font-bold uppercase tracking-wide",
 };
 
 const DEPTH_CLASS = ["", "ml-5", "ml-10"];
@@ -218,7 +298,7 @@ export function Markdown({ content, size = "compact", className }: MarkdownProps
                 className={cn(
                   "font-heading text-foreground",
                   HEADING_CLASS[level],
-                  article && level <= 2 && "mt-8 border-b-2 border-border pb-2 first:mt-0",
+                  article && level <= 2 && "mt-8 border-b border-border pb-2 first:mt-0",
                   article && level === 3 && "mt-5",
                 )}
               >
@@ -250,12 +330,12 @@ export function Markdown({ content, size = "compact", className }: MarkdownProps
           }
           case "table":
             return (
-              <div key={key} className="overflow-x-auto rounded-lg border-2 border-border bg-card shadow-hard-sm">
+              <div key={key} className="overflow-x-auto rounded-xl glass shadow-glass-sm">
                 <table className="w-full border-collapse text-left text-xs sm:text-sm">
                   <thead className="bg-primary text-primary-foreground">
                     <tr>
                       {block.header.map((cell, cellIndex) => (
-                        <th key={cellIndex} className="border-b-2 border-border px-3 py-2 font-extrabold">
+                        <th key={cellIndex} className="border-b border-border px-3 py-2 font-bold">
                           {renderInline(cell, `${key}-h${cellIndex}`)}
                         </th>
                       ))}
@@ -279,7 +359,7 @@ export function Markdown({ content, size = "compact", className }: MarkdownProps
             return (
               <pre
                 key={key}
-                className="overflow-x-auto rounded-lg border-2 border-border bg-muted p-3 font-mono text-xs leading-relaxed font-semibold"
+                className="overflow-x-auto rounded-xl border border-border bg-muted p-3 font-mono text-xs leading-relaxed font-semibold"
               >
                 {block.text}
               </pre>
@@ -290,6 +370,16 @@ export function Markdown({ content, size = "compact", className }: MarkdownProps
                 {renderInline(block.text, key)}
               </blockquote>
             );
+          case "math": {
+            const html = renderMathHtml(block.text, true);
+            return html === null ? (
+              <p key={key} className="whitespace-pre-line">
+                {`$$${block.text}$$`}
+              </p>
+            ) : (
+              <div key={key} dangerouslySetInnerHTML={{ __html: html }} />
+            );
+          }
           case "hr":
             return <hr key={key} className="border-t-2 border-border" />;
         }

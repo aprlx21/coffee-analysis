@@ -33,11 +33,8 @@ export function ReviewKeywords({ reviewKeywords, className }: ReviewKeywordsProp
   }
 
   return (
-    <div
-      data-slot="review-keywords-card"
-      className={cn("rounded-lg border-2 border-border bg-card p-4 shadow-hard-card sm:p-6", className)}
-    >
-      <div className="flex items-center gap-2 border-b-2 border-border pb-4">
+    <div data-slot="review-keywords-card" className={cn("rounded-xl glass p-4 shadow-glass-card sm:p-6", className)}>
+      <div className="flex items-center gap-2 border-b border-border pb-4">
         <Tag className="size-5 stroke-[2.5] text-foreground" />
         <h2 className="font-heading text-lg font-bold text-foreground">Từ khóa được nhắc nhiều ({keywords.length})</h2>
       </div>
@@ -46,7 +43,7 @@ export function ReviewKeywords({ reviewKeywords, className }: ReviewKeywordsProp
         {keywords.map((kw) => (
           <span
             key={kw.keyword}
-            className="inline-flex items-center gap-1.5 rounded-full border-2 border-border bg-muted px-3 py-1 text-xs font-bold text-foreground shadow-hard-sm transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1 text-xs font-bold text-foreground shadow-glass-sm transition-transform hover:-translate-y-0.5 hover:shadow-glass-lg"
           >
             <span>#{kw.keyword}</span>
             <span className="font-mono text-[10px] text-muted-foreground">({kw.count})</span>

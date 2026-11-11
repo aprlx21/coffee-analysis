@@ -1,12 +1,13 @@
 import "server-only";
 
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 import type { CafeFilters, SortKey } from "@/features/cafes/schema";
 
 import { getSql } from "../client";
-import type { Cafe, CafeCard, CafeListResult } from "../types";
-import { buildWhere } from "./filters";
+import type { Cafe, CafeListResult } from "../types";
+import { CACHE_TAG_CAFES } from "../cache-tags";
+import { filterCafes, getCafeSnapshot, sortCafes, toCard } from "./snapshot";
 
 export const PAGE_SIZE = 24;
 
@@ -26,64 +27,28 @@ export function cardColumns() {
     coalesce(c.quiet, false) as "quiet"`;
 }
 
-export function orderBy(sort: SortKey) {
-  const sql = getSql();
-  switch (sort) {
-    case "reviews":
-      return sql`c.reviews desc nulls last, c.rating desc nulls last, c.name`;
-    case "work_score":
-      return sql`c.work_score desc nulls last, c.rating desc nulls last, c.name`;
-    case "price_asc":
-      return sql`c.drink_price_median asc nulls last, c.rating desc nulls last, c.name`;
-    case "price_desc":
-      return sql`c.drink_price_median desc nulls last, c.rating desc nulls last, c.name`;
-    default:
-      return sql`c.rating desc nulls last, c.reviews desc nulls last, c.name`;
-  }
-}
-
-/** Danh sách quán (phân trang PAGE_SIZE). `sort`/`page` mặc định lấy từ `filters`. */
+/** Danh sách quán (phân trang PAGE_SIZE), lọc/sắp xếp trên snapshot đã cache — xem `snapshot.ts`. */
 export async function listCafes(
   filters: CafeFilters,
   sort: SortKey = filters.sort,
   page: number = filters.page,
 ): Promise<CafeListResult> {
-  "use cache";
-  cacheLife("hours");
-
   const safePage = Math.max(1, Math.floor(page));
-
-  try {
-    const sql = getSql();
-    const where = buildWhere(filters);
-    const [{ total }] = await sql<{ total: number }[]>`
-      select count(*)::int as total from v_cafe_directory c where ${where}`;
-    const items = await sql<CafeCard[]>`
-      select ${cardColumns()} from v_cafe_directory c where ${where}
-      order by ${orderBy(sort)} limit ${PAGE_SIZE} offset ${(safePage - 1) * PAGE_SIZE}`;
-    return {
-      items: [...items],
-      total,
-      page: safePage,
-      pageSize: PAGE_SIZE,
-      pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)),
-    };
-  } catch (err) {
-    console.error("Lỗi khi truy vấn listCafes:", err);
-    return {
-      items: [],
-      total: 0,
-      page: safePage,
-      pageSize: PAGE_SIZE,
-      pageCount: 1,
-    };
-  }
+  const rows = sortCafes(await filterCafes(await getCafeSnapshot(), filters), sort);
+  const total = rows.length;
+  return {
+    items: rows.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE).map(toCard),
+    total,
+    page: safePage,
+    pageSize: PAGE_SIZE,
+    pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)),
+  };
 }
 
-/** Chi tiết một quán; null nếu không tồn tại. */
 export async function getCafe(placeId: string): Promise<Cafe | null> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("days");
+  cacheTag(CACHE_TAG_CAFES);
 
   try {
     const sql = getSql();

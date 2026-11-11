@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Geist_Mono } from "next/font/google";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { ChatLauncher } from "@/features/ask-ai";
 import { siteConfig } from "@/lib/site-config";
 
 import "./globals.css";
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full">
         <Suspense>
           <AppShell>{children}</AppShell>
+          <ChatLauncher />
         </Suspense>
       </body>
     </html>

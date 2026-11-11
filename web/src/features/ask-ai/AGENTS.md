@@ -22,7 +22,10 @@ AskAiView ("use client")
 features/ask-ai/
 ├── index.ts
 ├── hooks/use-ask-ai.ts            # state chat + đọc stream + quota
-└── components/ask-ai-view.tsx     # khung chat, gợi ý, bong bóng, ô nhập
+├── components/ask-ai-view.tsx     # trang /hoi-ai: khung chat, gợi ý, ô nhập
+├── components/chat-message.tsx    # MessageBubble/AssistantAvatar + nhãn tool dùng chung
+├── components/chat-launcher.tsx   # nút nổi góc phải + bong bóng gợi ý (mount ở app/layout.tsx)
+└── components/chat-popup-panel.tsx # panel chat popup (next/dynamic, chỉ tải khi mở lần đầu)
 ```
 
 Câu trả lời render bằng `@/components/markdown` (bảng, danh sách, link nội bộ `/quan/<placeId>`).
@@ -33,3 +36,10 @@ Câu trả lời render bằng `@/components/markdown` (bảng, danh sách, link
 - Thêm tool mới ở `@/ai/tools` thì bổ sung nhãn tiếng Việt vào `TOOL_LABELS` / `TOOL_DONE_LABELS`.
 - Máy lạnh/ổ cắm là dữ liệu suy luận từ review — giữ dòng cảnh báo dưới ô nhập.
 - Test tay sẽ trừ lượt thật trong bảng `ai_rate_limits` (định danh = hash IP + User-Agent).
+
+## Popup chat nhanh (`ChatLauncher`)
+
+- Mount trong `app/layout.tsx` (trong `<Suspense>`, sau `<AppShell>`), ẩn ở `/hoi-ai`. Panel chỉ được tải/mount khi mở lần đầu (để `useAskAi` không fetch quota ở mọi trang), sau đó giữ mounted và ẩn bằng CSS để hội thoại không mất.
+- Bong bóng gợi ý hiện sau ~4s, nhớ trạng thái đã đóng/đã mở bằng `localStorage["ask-ai-teaser-done"]` (luôn try/catch).
+- Ở `/quan/[placeId]`, chip đầu tiên gắn `placeId` vào câu hỏi để AI gọi `getCafeDetail`.
+- z-index: launcher 45, panel 46 (trên bottom-nav 40, dưới Sheet/overlay 50).

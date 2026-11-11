@@ -1,24 +1,48 @@
 "use client";
 
-import { MapContainer, TileLayer } from "react-leaflet";
+import React, { useRef } from "react";
+import { LayersControl, MapContainer, TileLayer } from "react-leaflet";
 
-import { AN_THUONG_CENTER, DEFAULT_ZOOM, MAX_ZOOM, MIN_ZOOM, type MapPoint } from "../types";
-import { AnThuongCorePolygon } from "./an-thuong-polygon";
+import type { CafeCard } from "@/server/db";
+import {
+  AN_THUONG_CENTER,
+  DEFAULT_ZOOM,
+  MAX_ZOOM,
+  MIN_ZOOM,
+  TILE_LAYERS,
+  type ColorMode,
+  type DisplayMode,
+} from "../lib/constants";
 import { MapControls } from "./map-controls";
+import { MapLegend } from "./map-legend";
 import { MapMarkers } from "./map-markers";
+import { MapOverlays } from "./map-overlays";
 
-import "../styles/leaflet-neubrutalism.css";
+import "../styles/leaflet-glass.css";
 
 export interface MapViewProps {
-  points: MapPoint[];
+  cafes: CafeCard[];
+  colorMode: ColorMode;
+  displayMode: DisplayMode;
   selectedPlaceId: string | null;
   hoveredPlaceId: string | null;
-  onSelectPoint: (placeId: string) => void;
+  onSelectCafe: (placeId: string) => void;
+  coreCount?: number;
 }
 
-export function MapView({ points, selectedPlaceId, hoveredPlaceId, onSelectPoint }: MapViewProps) {
+export function MapView({
+  cafes,
+  colorMode,
+  displayMode,
+  selectedPlaceId,
+  hoveredPlaceId,
+  onSelectCafe,
+  coreCount = 68,
+}: MapViewProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="relative size-full overflow-hidden bg-muted">
+    <div ref={containerRef} className="relative size-full overflow-hidden bg-muted">
       <MapContainer
         center={AN_THUONG_CENTER}
         zoom={DEFAULT_ZOOM}
@@ -28,31 +52,53 @@ export function MapView({ points, selectedPlaceId, hoveredPlaceId, onSelectPoint
         scrollWheelZoom={true}
         className="z-0 size-full"
       >
-        {/*
-          Esri World Street Map — không cần API key.
-          KHÔNG dùng basemaps.cartocdn.com: CARTO đã bắt buộc API key, tile trả về hình chữ "API KEY REQUIRED".
-        */}
-        <TileLayer
-          attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>, HERE, Garmin, OpenStreetMap contributors'
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-          maxZoom={MAX_ZOOM}
-          maxNativeZoom={18}
-        />
+        {/* Base Layer Switcher (L.control.layers, topright) */}
+        <LayersControl position="topright">
+          <LayersControl.BaseLayer checked name={TILE_LAYERS[0].name}>
+            <TileLayer
+              attribution={TILE_LAYERS[0].attribution}
+              url={TILE_LAYERS[0].url}
+              maxZoom={MAX_ZOOM}
+              maxNativeZoom={18}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name={TILE_LAYERS[1].name}>
+            <TileLayer
+              attribution={TILE_LAYERS[1].attribution}
+              url={TILE_LAYERS[1].url}
+              maxZoom={MAX_ZOOM}
+              maxNativeZoom={18}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name={TILE_LAYERS[2].name}>
+            <TileLayer
+              attribution={TILE_LAYERS[2].attribution}
+              url={TILE_LAYERS[2].url}
+              maxZoom={MAX_ZOOM}
+              maxNativeZoom={19}
+            />
+          </LayersControl.BaseLayer>
+        </LayersControl>
 
-        {/* Vùng lõi Phố Du lịch An Thượng */}
-        <AnThuongCorePolygon />
+        {/* Lớp phủ bản đồ: Vành đai, Siêu lõi, Bờ biển Mỹ Khê */}
+        <MapOverlays coreCount={coreCount} />
 
-        {/* Nút điều khiển: Zoom in/out + Reset về tâm An Thượng */}
-        <MapControls />
-
-        {/* Danh sách Markers quán cafe */}
+        {/* Markers quán cafe (Rời rạc hoặc Gom cụm) */}
         <MapMarkers
-          points={points}
+          cafes={cafes}
+          colorMode={colorMode}
+          displayMode={displayMode}
           selectedPlaceId={selectedPlaceId}
           hoveredPlaceId={hoveredPlaceId}
-          onSelectPoint={onSelectPoint}
+          onSelectCafe={onSelectCafe}
         />
+
+        {/* Nút điều khiển Zoom + Về tâm An Thượng ở góc dưới trái */}
+        <MapControls />
       </MapContainer>
+
+      {/* Chú giải kéo thả (draggable glass legend) */}
+      <MapLegend colorMode={colorMode} filteredCafes={cafes} containerRef={containerRef} />
     </div>
   );
 }

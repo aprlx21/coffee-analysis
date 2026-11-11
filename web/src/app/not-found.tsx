@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
 export default function NotFound() {
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center px-4 py-12 text-center">
-      <div className="w-full rounded-lg border-2 border-border bg-card p-8 shadow-hard-card">
+      <div className="w-full rounded-xl glass p-8 shadow-glass-card">
         <p className="font-mono text-6xl font-bold text-foreground">404</p>
-        <h1 className="mt-3 font-heading text-2xl font-extrabold tracking-tight text-foreground">
+        <h1 className="mt-3 font-heading text-2xl font-bold tracking-tight text-foreground">
           Không tìm thấy trang này
         </h1>
         <p className="mt-2 text-sm font-medium text-muted-foreground">

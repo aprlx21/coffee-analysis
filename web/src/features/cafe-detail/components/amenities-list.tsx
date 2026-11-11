@@ -143,11 +143,8 @@ export function AmenitiesList({ cafe, className }: AmenitiesListProps) {
   const activeAmenities = AMENITY_CONFIGS.filter((cfg) => cfg.isActive(cafe));
 
   return (
-    <div
-      data-slot="amenities-card"
-      className={cn("rounded-lg border-2 border-border bg-card p-4 shadow-hard-card sm:p-6", className)}
-    >
-      <div className="flex items-center gap-2 border-b-2 border-border pb-4">
+    <div data-slot="amenities-card" className={cn("rounded-xl glass p-4 shadow-glass-card sm:p-6", className)}>
+      <div className="flex items-center gap-2 border-b border-border pb-4">
         <Sparkles className="size-5 stroke-[2.5] text-foreground" />
         <h2 className="font-heading text-lg font-bold text-foreground">
           Tiện ích & Cơ sở vật chất ({activeAmenities.length})
@@ -163,17 +160,17 @@ export function AmenitiesList({ cafe, className }: AmenitiesListProps) {
                 <div
                   key={item.key}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-full border-2 border-border px-3.5 py-1.5 text-xs font-bold transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5",
+                    "inline-flex items-center gap-2 rounded-full border border-border px-3.5 py-1.5 text-xs font-bold transition-transform hover:-translate-y-0.5 hover:shadow-glass-lg",
                     item.isInferred
-                      ? "bg-secondary text-secondary-foreground shadow-hard-sm"
-                      : "bg-surface text-foreground shadow-hard-sm",
+                      ? "bg-secondary text-secondary-foreground shadow-glass-sm"
+                      : "bg-surface text-foreground shadow-glass-sm",
                   )}
                 >
                   <Icon className="size-4 shrink-0 stroke-[2.5]" />
                   <span>{item.label}</span>
 
                   {item.isInferred ? (
-                    <span className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[9px] font-extrabold tracking-wide text-muted-foreground uppercase">
+                    <span className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wide text-muted-foreground uppercase">
                       suy luận từ review
                     </span>
                   ) : null}

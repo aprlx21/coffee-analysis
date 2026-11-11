@@ -19,11 +19,11 @@ export interface CafeGridProps {
 export function CafeGrid({ items, viewMode, total, onReset, className }: CafeGridProps) {
   if (items.length === 0 || total === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-border bg-card p-8 text-center shadow-hard-card md:p-14">
-        <div className="mb-4 flex size-16 items-center justify-center rounded-lg border-2 border-border bg-primary text-3xl font-black text-primary-foreground shadow-hard">
+      <div className="flex flex-col items-center justify-center rounded-xl glass p-8 text-center shadow-glass-card md:p-14">
+        <div className="mb-4 flex size-16 items-center justify-center rounded-lg border border-border bg-primary text-3xl font-bold text-primary-foreground shadow-glass">
           ☕
         </div>
-        <h3 className="font-heading text-xl font-extrabold text-foreground">Không tìm thấy quán cafe phù hợp</h3>
+        <h3 className="font-heading text-xl font-bold text-foreground">Không tìm thấy quán cafe phù hợp</h3>
         <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
           Không có quán nào khớp với các điều kiện lọc hiện tại. Thử bỏ bớt tiện ích hoặc xóa từ khóa tìm kiếm xem nhé!
         </p>
@@ -33,7 +33,7 @@ export function CafeGrid({ items, viewMode, total, onReset, className }: CafeGri
           <code className="font-mono font-bold">SUPABASE_DB_URL</code>) trong phần Vercel Dashboard → Settings →
           Environment Variables.
         </p>
-        <Button variant="default" onClick={onReset} className="mt-6 font-bold shadow-hard-sm">
+        <Button variant="default" onClick={onReset} className="mt-6 font-bold shadow-glass-sm">
           <RotateCcw className="mr-1.5 size-4 stroke-[2.5]" />
           XÓA TẤT CẢ BỘ LỌC
         </Button>

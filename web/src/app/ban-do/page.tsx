@@ -4,7 +4,7 @@ import { Coffee, Loader2 } from "lucide-react";
 
 import { parseCafeFilters } from "@/features/cafes/schema";
 import { MapPageView } from "@/features/map";
-import { getAllMapCafes, getFacets, getMapPoints } from "@/server/db";
+import { getAllMapCafes } from "@/server/db";
 
 export const metadata: Metadata = {
   title: "Bản đồ quán cafe An Thượng",
@@ -12,34 +12,30 @@ export const metadata: Metadata = {
     "Bản đồ tương tác hơn 115 quán cafe tại khu phố Tây An Thượng Đà Nẵng với bộ lọc tiện ích và bảng giá chi tiết.",
 };
 
-interface BanDoPageProps {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}
-
 function MapPageSkeleton() {
   return (
     <div className="mx-auto w-full max-w-[1600px] p-2 sm:p-4 md:p-6">
-      <div className="relative flex h-[calc(100dvh-3.5rem-5.5rem)] w-full flex-col overflow-hidden rounded-xl border-2 border-border bg-card shadow-hard-card md:h-[calc(100vh-6rem)] md:flex-row">
+      <div className="relative flex h-[calc(100dvh-3.5rem-5.5rem)] w-full flex-col overflow-hidden rounded-2xl border border-border glass shadow-glass-card md:h-[calc(100vh-6rem)] md:flex-row">
         {/* Left skeleton (map) */}
-        <div className="relative flex size-full items-center justify-center border-border bg-muted md:w-[58%] md:border-r-2">
-          <div className="flex flex-col items-center gap-3 rounded-lg border-2 border-border bg-card p-6 text-center shadow-hard">
-            <div className="flex size-12 items-center justify-center rounded-lg border-2 border-border bg-primary text-primary-foreground shadow-hard-sm">
-              <Coffee className="size-6 stroke-[2.5]" />
+        <div className="relative flex size-full items-center justify-center border-border bg-muted/60 md:w-[58%] md:border-r">
+          <div className="flex flex-col items-center gap-3 rounded-2xl glass-strong p-6 text-center shadow-glass-lg">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glass-sm">
+              <Coffee className="size-6 stroke-[2]" />
             </div>
             <div>
               <h3 className="font-heading text-base font-bold text-foreground">Đang tải bản đồ An Thượng</h3>
               <p className="text-xs font-medium text-muted-foreground">Đang đồng bộ dữ liệu quán cafe...</p>
             </div>
-            <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-              <Loader2 className="size-4 animate-spin stroke-[2.5]" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+              <Loader2 className="size-4 animate-spin text-primary" />
               <span>Vui lòng đợi giây lát</span>
             </div>
           </div>
         </div>
 
         {/* Right skeleton (list) */}
-        <div className="hidden size-full flex-col bg-background p-4 md:flex md:w-[42%]">
-          <div className="mb-4 h-8 w-48 animate-pulse rounded bg-muted" />
+        <div className="hidden size-full flex-col bg-background/50 p-4 md:flex md:w-[42%]">
+          <div className="mb-4 h-8 w-48 animate-pulse rounded-lg bg-muted" />
           <div className="mb-4 flex gap-2">
             <div className="h-6 w-16 animate-pulse rounded-full bg-muted" />
             <div className="h-6 w-16 animate-pulse rounded-full bg-muted" />
@@ -47,7 +43,7 @@ function MapPageSkeleton() {
           </div>
           <div className="flex flex-col gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-28 animate-pulse rounded-lg border-2 border-border bg-card p-3" />
+              <div key={i} className="h-28 animate-pulse rounded-xl border border-border glass p-3" />
             ))}
           </div>
         </div>
@@ -56,24 +52,17 @@ function MapPageSkeleton() {
   );
 }
 
-async function BanDoContent({ searchParams }: BanDoPageProps) {
-  const resolvedSearchParams = await searchParams;
-  const filters = parseCafeFilters(resolvedSearchParams);
+async function BanDoContent() {
+  // Tải danh sách toàn bộ quán trên bản đồ (mặc định lấy tất cả quán có lat/lng)
+  const allCafes = await getAllMapCafes(parseCafeFilters({}));
 
-  // Fetch map points, all cafes for map view, and facets concurrently in a single round-trip
-  const [mapPoints, allCafes, facets] = await Promise.all([
-    getMapPoints(filters),
-    getAllMapCafes(filters, filters.sort),
-    getFacets(),
-  ]);
-
-  return <MapPageView points={mapPoints} cafes={allCafes} total={mapPoints.length} facets={facets} filters={filters} />;
+  return <MapPageView cafes={allCafes} />;
 }
 
-export default function BanDoPage({ searchParams }: BanDoPageProps) {
+export default function BanDoPage() {
   return (
     <Suspense fallback={<MapPageSkeleton />}>
-      <BanDoContent searchParams={searchParams} />
+      <BanDoContent />
     </Suspense>
   );
 }

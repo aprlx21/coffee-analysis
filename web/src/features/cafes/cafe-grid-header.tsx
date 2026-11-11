@@ -116,8 +116,8 @@ export function CafeGridHeader({
     <div className="space-y-4">
       {/* Title & Subtitle */}
       <div className="flex flex-col gap-1">
-        <h1 className="font-heading text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-          <span className="font-extrabold">{total} quán cafe</span> tại An Thượng
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          <span className="font-bold">{total} quán cafe</span> tại An Thượng
         </h1>
         <p className="text-xs font-medium text-muted-foreground sm:text-sm">
           {activeCount > 0
@@ -127,7 +127,7 @@ export function CafeGridHeader({
       </div>
 
       {/* Control Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border-2 border-border bg-card p-3 shadow-hard">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl glass p-3 shadow-glass">
         {/* Left Side: Mobile Filter Sheet button & Result stats */}
         <div className="flex items-center gap-2">
           {/* Mobile Sheet Trigger (hidden on lg where sidebar is visible) */}
@@ -180,14 +180,14 @@ export function CafeGridHeader({
               const v = val[0];
               if (v === "grid" || v === "list") onViewModeChange(v);
             }}
-            className="rounded-lg border-2 border-border bg-background p-0.5"
+            className="rounded-lg border border-border bg-background p-0.5"
           >
             <ToggleGroupItem
               value="grid"
               aria-label="Xem dạng lưới thẻ"
               className={`size-8 rounded-md p-0 ${
                 viewMode === "grid"
-                  ? "bg-primary font-black text-primary-foreground shadow-hard-sm"
+                  ? "bg-primary font-bold text-primary-foreground shadow-glass-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -198,7 +198,7 @@ export function CafeGridHeader({
               aria-label="Xem dạng danh sách"
               className={`size-8 rounded-md p-0 ${
                 viewMode === "list"
-                  ? "bg-primary font-black text-primary-foreground shadow-hard-sm"
+                  ? "bg-primary font-bold text-primary-foreground shadow-glass-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -215,7 +215,7 @@ export function CafeGridHeader({
           {chips.map((chip) => (
             <span
               key={chip.id}
-              className="inline-flex items-center gap-1.5 rounded-full border-2 border-border bg-card px-2.5 py-0.5 text-xs font-bold text-foreground shadow-hard-sm"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-0.5 text-xs font-bold text-foreground shadow-glass-sm"
             >
               <span>{chip.label}</span>
               <button

@@ -1,38 +1,30 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
-import { Coffee, RotateCcw } from "lucide-react";
+import { Coffee } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import type { CafeFilters } from "@/features/cafes/schema";
-import type { CafeCard, Facets } from "@/server/db";
+import type { CafeCard } from "@/server/db";
 import { MapCafeCard } from "./map-cafe-card";
-import { MapFilterSheet } from "./map-filter-sheet";
-import { MapQuickFilters } from "./map-quick-filters";
 
 interface MapListPanelProps {
   cafes: CafeCard[];
   total: number;
-  facets: Facets;
-  filters: CafeFilters;
   selectedPlaceId: string | null;
   hoveredPlaceId: string | null;
   onSelectCafe: (placeId: string) => void;
   onHoverCafe: (placeId: string | null) => void;
+  onClearFilters?: () => void;
 }
 
 export function MapListPanel({
   cafes,
   total,
-  facets,
-  filters,
   selectedPlaceId,
   hoveredPlaceId,
   onSelectCafe,
   onHoverCafe,
+  onClearFilters,
 }: MapListPanelProps) {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -49,88 +41,69 @@ export function MapListPanel({
     }
   }, [selectedPlaceId]);
 
-  const hasActiveFilters =
-    Boolean(filters.amenities?.length) ||
-    Boolean(filters.priceRange?.length) ||
-    Boolean(filters.minRating) ||
-    Boolean(filters.q);
-
   return (
-    <div className="flex size-full flex-col overflow-hidden bg-background">
+    <div className="flex size-full flex-col overflow-hidden bg-background/50">
       {/* Top Header */}
-      <div className="flex shrink-0 flex-col gap-2.5 border-b-2 border-border bg-card p-4 shadow-sm">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="font-heading text-lg font-black tracking-tight text-foreground sm:text-xl">
-                {total} quán trên bản đồ
-              </h2>
-              <Badge variant="default" className="text-[10px] font-black">
-                AN THƯỢNG
-              </Badge>
-            </div>
-            <p className="text-xs font-medium text-muted-foreground">
-              Nhấp vào quán hoặc ghim trên bản đồ để xem chi tiết
-            </p>
+      <div className="flex shrink-0 items-center justify-between border-b border-border/80 bg-card/60 p-4 shadow-glass-sm backdrop-blur-md">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="font-heading text-base font-bold tracking-tight text-foreground sm:text-lg">
+              {total} quán trên bản đồ
+            </h2>
+            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] font-bold text-primary">
+              AN THƯỢNG
+            </Badge>
           </div>
-
-          <MapFilterSheet filters={filters} facets={facets} totalResults={total} />
+          <p className="text-xs font-medium text-muted-foreground">
+            Nhấp vào quán hoặc ghim trên bản đồ để xem chi tiết
+          </p>
         </div>
-
-        {/* Quick Filter Pills */}
-        <MapQuickFilters />
       </div>
 
       {/* Cards list container */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+      <div className="flex-1 space-y-3 overflow-y-auto p-3 sm:p-4">
         {cafes.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <div className="flex size-14 items-center justify-center rounded-lg border-2 border-border bg-muted text-foreground shadow-hard">
-              <Coffee className="size-7 stroke-[2]" />
+            <div className="flex size-14 items-center justify-center rounded-xl glass text-foreground shadow-glass">
+              <Coffee className="size-7 stroke-[1.8] text-primary" />
             </div>
             <div>
               <h3 className="font-heading text-base font-bold text-foreground">Không tìm thấy quán nào</h3>
               <p className="mt-1 max-w-xs text-xs font-medium text-muted-foreground">
-                Không có quán cafe nào phù hợp với các tiêu chí lọc hiện tại. Thử bỏ bớt bộ lọc để xem nhiều kết quả
-                hơn.
+                Không có quán cafe nào phù hợp với các tiêu chí lọc hiện tại. Thử bỏ bớt bộ lọc hoặc từ khóa tìm kiếm.
               </p>
             </div>
-            {hasActiveFilters && (
-              <Link
-                href="/ban-do"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "mt-2 text-xs font-bold shadow-hard-sm",
-                )}
+            {onClearFilters && (
+              <button
+                type="button"
+                onClick={onClearFilters}
+                className="mt-2 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-glass-sm hover:-translate-y-0.5 hover:shadow-glass active:translate-y-0"
               >
-                <RotateCcw className="mr-1 size-3.5 stroke-[2.5]" />
-                Xoá tất cả bộ lọc
-              </Link>
+                Đặt lại bộ lọc
+              </button>
             )}
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {cafes.map((cafe) => (
-              <div
-                key={cafe.placeId}
-                ref={(el) => {
-                  if (el) {
-                    cardRefs.current[cafe.placeId] = el;
-                  } else {
-                    delete cardRefs.current[cafe.placeId];
-                  }
-                }}
-              >
-                <MapCafeCard
-                  cafe={cafe}
-                  isSelected={selectedPlaceId === cafe.placeId}
-                  isHovered={hoveredPlaceId === cafe.placeId}
-                  onSelect={() => onSelectCafe(cafe.placeId)}
-                  onHover={(hovering) => onHoverCafe(hovering ? cafe.placeId : null)}
-                />
-              </div>
-            ))}
-          </div>
+          cafes.map((cafe) => (
+            <div
+              key={cafe.placeId}
+              ref={(ref) => {
+                if (ref) {
+                  cardRefs.current[cafe.placeId] = ref;
+                } else {
+                  delete cardRefs.current[cafe.placeId];
+                }
+              }}
+            >
+              <MapCafeCard
+                cafe={cafe}
+                isSelected={selectedPlaceId === cafe.placeId}
+                isHovered={hoveredPlaceId === cafe.placeId}
+                onSelect={() => onSelectCafe(cafe.placeId)}
+                onHover={(hovering) => onHoverCafe(hovering ? cafe.placeId : null)}
+              />
+            </div>
+          ))
         )}
       </div>
     </div>

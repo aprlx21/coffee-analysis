@@ -39,7 +39,7 @@ export function CafePagination({ page, pageCount, onPageChange }: CafePagination
   return (
     <nav
       aria-label="Phân trang"
-      className="mt-8 flex flex-col items-center justify-between gap-4 border-t-2 border-border pt-6 sm:flex-row"
+      className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row"
     >
       <div className="font-mono text-xs font-bold text-muted-foreground">
         Trang <span className="text-foreground">{page}</span> / <span className="text-foreground">{pageCount}</span>
@@ -77,7 +77,7 @@ export function CafePagination({ page, pageCount, onPageChange }: CafePagination
                 size="sm"
                 onClick={() => onPageChange(p)}
                 className={`size-8 p-0 font-mono text-xs font-bold ${
-                  isActive ? "bg-primary text-primary-foreground shadow-hard-sm" : ""
+                  isActive ? "bg-primary text-primary-foreground shadow-glass-sm" : ""
                 }`}
                 aria-current={isActive ? "page" : undefined}
               >

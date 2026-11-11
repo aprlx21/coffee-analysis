@@ -3,20 +3,20 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border-2 border-border font-bold whitespace-nowrap transition-all outline-none select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent font-semibold whitespace-nowrap transition-all duration-200 outline-none select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:translate-y-0 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-hard hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_var(--border)]",
+          "bg-primary text-primary-foreground shadow-glass hover:-translate-y-0.5 hover:shadow-glass-lg",
         outline:
-          "bg-card text-foreground shadow-hard hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_var(--border)]",
+          "glass text-foreground shadow-glass-sm hover:-translate-y-0.5 hover:shadow-glass-lg",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-hard hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_var(--border)]",
+          "border-border bg-secondary text-secondary-foreground shadow-glass-sm hover:-translate-y-0.5 hover:shadow-glass-lg",
         ghost:
-          "border-transparent hover:border-border hover:bg-muted hover:text-foreground",
+          "hover:bg-muted hover:text-foreground",
         destructive:
-          "bg-destructive text-primary-foreground shadow-hard hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_var(--border)]",
+          "bg-destructive text-destructive-foreground shadow-glass hover:-translate-y-0.5 hover:shadow-glass-lg",
         link: "border-transparent text-foreground underline-offset-4 hover:underline",
       },
       size: {

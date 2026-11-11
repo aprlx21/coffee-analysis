@@ -83,15 +83,15 @@ export function BenchmarkMenu({ items }: BenchmarkMenuProps) {
   }, [items, search, selectedTab]);
 
   return (
-    <div className="rounded-lg border-2 border-border bg-card p-6 shadow-hard-card md:p-8">
+    <div className="rounded-xl glass p-6 shadow-glass-card md:p-8">
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-md border-2 border-border bg-primary text-primary-foreground shadow-hard-sm">
+            <div className="flex size-7 items-center justify-center rounded-md border border-border bg-primary text-primary-foreground shadow-glass-sm">
               <Coffee className="size-4 stroke-[2.5]" />
             </div>
-            <h2 className="font-heading text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">
+            <h2 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Bảng Giá Đồ Uống Điển Hình Toàn Khu
             </h2>
           </div>
@@ -122,9 +122,9 @@ export function BenchmarkMenu({ items }: BenchmarkMenuProps) {
               key={tabKey}
               type="button"
               onClick={() => setSelectedTab(tabKey)}
-              className={`cursor-pointer rounded-full border-2 border-border px-3.5 py-1 text-xs font-bold transition-all ${
+              className={`cursor-pointer rounded-full border border-border px-3.5 py-1 text-xs font-bold transition-all ${
                 active
-                  ? "bg-primary text-primary-foreground shadow-hard-sm"
+                  ? "bg-primary text-primary-foreground shadow-glass-sm"
                   : "bg-surface text-foreground hover:bg-muted"
               }`}
             >
@@ -135,9 +135,9 @@ export function BenchmarkMenu({ items }: BenchmarkMenuProps) {
       </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto rounded-lg border-2 border-border bg-card shadow-hard-sm">
+      <div className="overflow-x-auto rounded-xl glass shadow-glass-sm">
         <table className="w-full min-w-[620px] text-left text-sm">
-          <thead className="border-b-2 border-border bg-muted/70 text-xs font-extrabold tracking-wide text-foreground uppercase">
+          <thead className="border-b border-border bg-muted/70 text-xs font-bold tracking-wide text-foreground uppercase">
             <tr>
               <th scope="col" className="px-4 py-3.5">
                 Món đồ uống
@@ -178,7 +178,7 @@ export function BenchmarkMenu({ items }: BenchmarkMenuProps) {
                   <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-muted-foreground">
                     {formatVnd(drink.priceMin)}
                   </td>
-                  <td className="bg-primary/10 px-4 py-3 text-right font-mono text-base font-extrabold text-foreground">
+                  <td className="bg-primary/10 px-4 py-3 text-right font-mono text-base font-bold text-foreground">
                     {formatVnd(drink.priceMedian)}
                   </td>
                   <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-muted-foreground">

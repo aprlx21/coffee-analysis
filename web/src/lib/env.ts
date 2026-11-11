@@ -17,6 +17,9 @@ const envSchema = z.object({
   GROQ_API_KEY: z.string().min(1).optional(),
   RATE_LIMIT_SALT: z.string().default("coffee_analysis_salt_2026"),
 
+  // --- Làm mới cache dữ liệu quán qua POST /api/revalidate (tuỳ chọn; thiếu → route trả 503) ---
+  REVALIDATE_SECRET: z.string().min(16).optional(),
+
   // --- Database (tuỳ chọn) — xem src/server/AGENTS.md ---
   DATABASE_URL: z
     .string()

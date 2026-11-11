@@ -15,11 +15,8 @@ export function OpeningHours({ hours, className }: OpeningHoursProps) {
   const schedules = parseHoursData(hours);
 
   return (
-    <div
-      data-slot="opening-hours-card"
-      className={cn("rounded-lg border-2 border-border bg-card p-4 shadow-hard-card sm:p-6", className)}
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-border pb-4">
+    <div data-slot="opening-hours-card" className={cn("rounded-xl glass p-4 shadow-glass-card sm:p-6", className)}>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <div className="flex items-center gap-2">
           <Clock className="size-5 stroke-[2.5] text-foreground" />
           <h2 className="font-heading text-lg font-bold text-foreground">Giờ mở cửa</h2>
@@ -29,7 +26,7 @@ export function OpeningHours({ hours, className }: OpeningHoursProps) {
           {status.isOpen === true ? (
             <Badge
               variant="default"
-              className="gap-1.5 border-2 border-border bg-primary px-3 py-1 text-xs font-black text-primary-foreground shadow-hard-sm"
+              className="gap-1.5 border border-border bg-primary px-3 py-1 text-xs font-bold text-primary-foreground shadow-glass-sm"
             >
               <CheckCircle2 className="size-3.5 stroke-[2.5]" />
               <span>Đang mở cửa</span>
@@ -37,7 +34,7 @@ export function OpeningHours({ hours, className }: OpeningHoursProps) {
           ) : status.isOpen === false ? (
             <Badge
               variant="destructive"
-              className="gap-1.5 border-2 border-border bg-destructive px-3 py-1 text-xs font-black text-primary-foreground shadow-hard-sm"
+              className="gap-1.5 border border-border bg-destructive px-3 py-1 text-xs font-bold text-primary-foreground shadow-glass-sm"
             >
               <XCircle className="size-3.5 stroke-[2.5]" />
               <span>Đã đóng cửa</span>
@@ -45,7 +42,7 @@ export function OpeningHours({ hours, className }: OpeningHoursProps) {
           ) : (
             <Badge
               variant="muted"
-              className="border-2 border-border bg-muted px-2.5 py-1 text-xs font-bold text-muted-foreground"
+              className="border border-border bg-muted px-2.5 py-1 text-xs font-bold text-muted-foreground"
             >
               Chưa cập nhật giờ
             </Badge>
@@ -65,16 +62,16 @@ export function OpeningHours({ hours, className }: OpeningHoursProps) {
                 <div
                   key={schedule.day}
                   className={cn(
-                    "flex items-center justify-between rounded-lg border-2 px-3 py-2 text-sm transition-all",
+                    "flex items-center justify-between rounded-lg border px-3 py-2 text-sm transition-all",
                     isToday
-                      ? "border-border bg-primary font-bold text-primary-foreground shadow-hard-sm"
+                      ? "border-border bg-primary font-bold text-primary-foreground shadow-glass-sm"
                       : "border-border/60 bg-muted/40 font-medium text-foreground",
                   )}
                 >
                   <div className="flex items-center gap-2">
                     <span>{vnDay}</span>
                     {isToday ? (
-                      <span className="py-0.2 rounded border border-border bg-card px-1.5 text-[10px] font-black text-foreground uppercase">
+                      <span className="py-0.2 rounded border border-border bg-card px-1.5 text-[10px] font-bold text-foreground uppercase">
                         Hôm nay
                       </span>
                     ) : null}

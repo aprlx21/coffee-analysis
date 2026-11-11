@@ -39,7 +39,7 @@ export default function InsightsPage() {
           </Badge>
         </div>
 
-        <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
           Insights Thị Trường Cafe
         </h1>
 
@@ -51,7 +51,7 @@ export default function InsightsPage() {
 
       <dl className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {STATS.map((stat) => (
-          <div key={stat.label} className="rounded-lg border-2 border-border bg-card p-4 shadow-hard-sm">
+          <div key={stat.label} className="rounded-xl glass p-4 shadow-glass-sm">
             <dd className="font-mono text-2xl font-bold text-foreground">{stat.value}</dd>
             <dt className="mt-0.5 text-xs font-bold text-muted-foreground">{stat.label}</dt>
           </div>
@@ -59,18 +59,18 @@ export default function InsightsPage() {
       </dl>
 
       {report ? (
-        <article className="rounded-lg border-2 border-border bg-card p-5 shadow-hard-card sm:p-8">
+        <article className="rounded-xl glass p-5 shadow-glass-card sm:p-8">
           <Markdown content={report} size="article" />
         </article>
       ) : (
-        <div className="rounded-lg border-2 border-border bg-card p-8 text-center text-sm font-bold text-muted-foreground shadow-hard-card">
+        <div className="rounded-xl glass p-8 text-center text-sm font-bold text-muted-foreground shadow-glass-card">
           Báo cáo đang được cập nhật. Bạn quay lại sau nhé.
         </div>
       )}
 
-      <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-lg border-2 border-border bg-primary p-6 shadow-hard-card sm:flex-row">
+      <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-lg border border-border bg-primary p-6 shadow-glass-card sm:flex-row">
         <div>
-          <h2 className="font-heading text-base font-extrabold text-primary-foreground">Muốn đào sâu một con số?</h2>
+          <h2 className="font-heading text-base font-bold text-primary-foreground">Muốn đào sâu một con số?</h2>
           <p className="mt-1 text-xs font-medium text-primary-foreground sm:text-sm">
             Hỏi trợ lý AI hoặc xem số liệu thống kê trực tiếp từ cơ sở dữ liệu.
           </p>

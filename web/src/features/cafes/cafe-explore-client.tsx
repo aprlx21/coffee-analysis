@@ -103,7 +103,7 @@ export function CafeExploreClient({ initialFilters, cafesResult, facets, canonic
           {/* Pending transition indicator */}
           <div className="relative">
             {isPending && (
-              <div className="absolute -top-3 right-0 z-20 flex animate-pulse items-center gap-1.5 rounded-full border border-border bg-primary px-2.5 py-0.5 text-xs font-black text-primary-foreground shadow-hard-sm">
+              <div className="absolute -top-3 right-0 z-20 flex animate-pulse items-center gap-1.5 rounded-full border border-border bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground shadow-glass-sm">
                 <Loader2 className="size-3 animate-spin stroke-[3]" />
                 <span>Đang tải...</span>
               </div>

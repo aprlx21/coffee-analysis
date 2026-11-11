@@ -63,18 +63,18 @@ export function KpiTiles({ kpi }: KpiTilesProps) {
         return (
           <div
             key={tile.id}
-            className="flex flex-col justify-between rounded-lg border-2 border-border bg-card p-5 shadow-hard-card transition-all hover:-translate-x-0.5 hover:-translate-y-0.5"
+            className="flex flex-col justify-between rounded-xl glass p-5 shadow-glass-card transition-all hover:-translate-y-0.5 hover:shadow-glass-lg"
           >
             <div className="flex items-start justify-between gap-2">
               <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase">{tile.label}</span>
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-md border-2 border-border bg-primary text-primary-foreground shadow-hard-sm">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-primary text-primary-foreground shadow-glass-sm">
                 <Icon className="size-4 stroke-[2.5]" />
               </div>
             </div>
 
             <div className="mt-4">
               <div className="flex items-baseline gap-1.5">
-                <span className="font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                <span className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                   {tile.value}
                 </span>
                 <span className="text-sm font-bold text-muted-foreground">{tile.unit}</span>

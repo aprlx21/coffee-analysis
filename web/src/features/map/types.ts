@@ -1,24 +1,22 @@
-import type { CafeCard, Facets, MapPoint } from "@/server/db";
-import type { CafeFilters } from "@/features/cafes/schema";
+import type { CafeCard } from "@/server/db";
+import type { ColorMode, DisplayMode, SpatialClusterKey } from "./lib/constants";
 
-export type { CafeCard, Facets, MapPoint };
-
-export const AN_THUONG_CENTER: [number, number] = [16.0497, 108.244];
-export const DEFAULT_ZOOM = 16;
-export const MIN_ZOOM = 13;
-export const MAX_ZOOM = 19;
-
-export interface MapPageData {
-  points: MapPoint[];
-  cafes: CafeCard[];
-  total: number;
-  facets: Facets;
-  filters: CafeFilters;
-}
+export type { CafeCard, ColorMode, DisplayMode, SpatialClusterKey };
+export * from "./lib/constants";
 
 export interface MapSyncState {
   selectedPlaceId: string | null;
   hoveredPlaceId: string | null;
   selectCafe: (placeId: string | null, shouldPanMap?: boolean) => void;
   hoverCafe: (placeId: string | null) => void;
+}
+
+export type AmenityFilterKey = "outdoor" | "wifi" | "ac" | "outlets" | "pet";
+
+export interface MapFilterState {
+  searchQuery: string;
+  clusterFilter: "all" | SpatialClusterKey;
+  amenities: AmenityFilterKey[];
+  colorMode: ColorMode;
+  displayMode: DisplayMode;
 }

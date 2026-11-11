@@ -35,20 +35,20 @@ export function CafeFilterSheet({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
-        render={<Button variant="outline" size="sm" className="flex items-center gap-1.5 font-bold shadow-hard-sm" />}
+        render={<Button variant="outline" size="sm" className="flex items-center gap-1.5 font-bold shadow-glass-sm" />}
       >
         <Filter className="size-4 stroke-[2.5]" />
         <span>BỘ LỌC</span>
         {activeCount > 0 && (
-          <Badge variant="default" className="size-5 justify-center p-0 text-[10px] font-black">
+          <Badge variant="default" className="size-5 justify-center p-0 text-[10px] font-bold">
             {activeCount}
           </Badge>
         )}
       </SheetTrigger>
 
       <SheetContent side="left" className="flex h-full w-[85vw] max-w-md flex-col p-0">
-        <SheetHeader className="border-b-2 border-border bg-card p-4">
-          <SheetTitle className="flex items-center gap-2 text-base font-extrabold uppercase">
+        <SheetHeader className="border-b border-border bg-card p-4">
+          <SheetTitle className="flex items-center gap-2 text-base font-bold uppercase">
             <Filter className="size-4 stroke-[2.5]" />
             Bộ lọc quán cafe
           </SheetTitle>
@@ -65,7 +65,7 @@ export function CafeFilterSheet({
           />
         </ScrollArea>
 
-        <SheetFooter className="flex-row gap-2 border-t-2 border-border bg-card p-4 sm:justify-between">
+        <SheetFooter className="flex-row gap-2 border-t border-border bg-card p-4 sm:justify-between">
           {activeCount > 0 && (
             <Button variant="outline" size="sm" onClick={onReset} className="flex-1 text-xs font-bold">
               XÓA LỌC
@@ -75,7 +75,7 @@ export function CafeFilterSheet({
             variant="default"
             size="sm"
             onClick={() => setOpen(false)}
-            className="flex-1 text-xs font-bold shadow-hard-sm"
+            className="flex-1 text-xs font-bold shadow-glass-sm"
           >
             XEM {totalResults} QUÁN
           </Button>

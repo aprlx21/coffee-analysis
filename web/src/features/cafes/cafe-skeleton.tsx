@@ -14,12 +14,9 @@ export function CafeSkeleton({ count = 6, viewMode = "grid" }: CafeSkeletonProps
       )}
     >
       {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={index}
-          className="flex flex-col overflow-hidden rounded-lg border-2 border-border bg-card shadow-hard-card"
-        >
+        <div key={index} className="flex flex-col overflow-hidden rounded-xl glass shadow-glass-card">
           {/* Cover image skeleton */}
-          <div className="relative aspect-[16/10] w-full border-b-2 border-border bg-muted">
+          <div className="relative aspect-[16/10] w-full border-b border-border bg-muted">
             <Skeleton className="size-full rounded-none" />
           </div>
 
@@ -34,7 +31,7 @@ export function CafeSkeleton({ count = 6, viewMode = "grid" }: CafeSkeletonProps
               <Skeleton className="h-4 w-1/2" />
             </div>
 
-            <div className="space-y-2 border-t-2 border-border/10 pt-2.5">
+            <div className="space-y-2 border-t border-border/10 pt-2.5">
               <Skeleton className="h-4 w-28" />
               <div className="flex gap-1.5">
                 <Skeleton className="h-5 w-14 rounded-full" />

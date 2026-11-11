@@ -20,16 +20,16 @@ async def test_fetch():
         
         # Let's inspect images in DOM
         img_srcs = await page.evaluate("""() => {
-            const imgs = Array.from(document.querySelectorAll('img, button[jsaction*="pane.heroHeaderImage"] img, div[role="img"]'));
-            return imgs.map(el => el.src || el.style.backgroundImage).filter(Boolean);
+            const imgs = Array.from(document.querySelectorAll('button[jsaction*="heroHeaderImage"] img, img[decoding="async"]'));
+            return imgs.map(el => el.src).filter(Boolean);
         }""")
         
         print(f"Captured network images ({len(captured_images)}):")
-        for u in set(captured_images)[:5]:
+        for u in list(set(captured_images))[:10]:
             print("  NET:", u)
             
-        print(f"DOM Image elements ({len(img_srcs)}):")
-        for s in set(img_srcs)[:10]:
+        print(f"DOM Hero/Main images ({len(img_srcs)}):")
+        for s in list(set(img_srcs)):
             print("  DOM:", s)
             
         await browser.close()

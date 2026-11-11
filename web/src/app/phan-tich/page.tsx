@@ -33,7 +33,7 @@ export default async function PhanTichPage() {
           </Badge>
         </div>
 
-        <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
           Phân Tích Thị Trường & Bảng Giá
         </h1>
 
@@ -67,11 +67,11 @@ export default async function PhanTichPage() {
       </section>
 
       {/* Quick Navigation Footer Banner */}
-      <div className="flex flex-col items-center justify-between gap-4 rounded-lg border-2 border-border bg-card p-6 shadow-hard-card sm:flex-row">
+      <div className="flex flex-col items-center justify-between gap-4 rounded-xl glass p-6 shadow-glass-card sm:flex-row">
         <div>
           <div className="flex items-center gap-2">
             <Lightbulb className="size-5 stroke-[2.5] text-foreground" />
-            <h3 className="font-heading text-base font-extrabold text-foreground">
+            <h3 className="font-heading text-base font-bold text-foreground">
               Tìm hiểu sâu hơn về cơ hội kinh doanh F&B?
             </h3>
           </div>

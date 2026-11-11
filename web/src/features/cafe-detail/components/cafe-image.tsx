@@ -21,11 +21,11 @@ export function CafeImage({ src, name, className }: CafeImageProps) {
       <div
         data-slot="cafe-image-fallback"
         className={cn(
-          "flex aspect-video w-full flex-col items-center justify-center rounded-lg border-2 border-border bg-primary/25 p-6 shadow-hard-card md:aspect-4/3",
+          "flex aspect-video w-full flex-col items-center justify-center rounded-lg border border-border bg-primary/25 p-6 shadow-glass-card md:aspect-4/3",
           className,
         )}
       >
-        <div className="flex size-20 items-center justify-center rounded-lg border-2 border-border bg-primary font-heading text-3xl font-black text-primary-foreground shadow-hard">
+        <div className="flex size-20 items-center justify-center rounded-lg border border-border bg-primary font-heading text-3xl font-bold text-primary-foreground shadow-glass">
           {initialChar}
         </div>
         <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase">
@@ -40,7 +40,7 @@ export function CafeImage({ src, name, className }: CafeImageProps) {
     <div
       data-slot="cafe-image-container"
       className={cn(
-        "relative aspect-video w-full overflow-hidden rounded-lg border-2 border-border bg-muted shadow-hard-card md:aspect-4/3",
+        "relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-muted shadow-glass-card md:aspect-4/3",
         className,
       )}
     >

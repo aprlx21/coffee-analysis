@@ -22,7 +22,7 @@ export function CafeHeader({ cafe, className }: CafeHeaderProps) {
       <div>
         <Link
           href="/"
-          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5 font-bold shadow-hard-sm")}
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5 font-bold shadow-glass-sm")}
         >
           <ArrowLeft className="size-4 stroke-[2.5]" />
           <span>Quay lại khám phá</span>
@@ -44,7 +44,7 @@ export function CafeHeader({ cafe, className }: CafeHeaderProps) {
               {cafe.workScore !== null && cafe.workScore > 0 ? (
                 <Badge
                   variant="default"
-                  className="gap-1.5 border-2 border-border bg-primary px-3 py-1 text-xs font-black text-primary-foreground uppercase shadow-hard-sm"
+                  className="gap-1.5 border border-border bg-primary px-3 py-1 text-xs font-bold text-primary-foreground uppercase shadow-glass-sm"
                 >
                   <Laptop className="size-3.5 stroke-[2.5]" />
                   <span>LÀM VIỆC TỐT: {cafe.workScore}/100</span>
@@ -54,7 +54,7 @@ export function CafeHeader({ cafe, className }: CafeHeaderProps) {
               {cafe.mainCategory ? (
                 <Badge
                   variant="secondary"
-                  className="border-2 border-border bg-secondary px-2.5 py-1 text-xs font-bold text-foreground shadow-hard-sm"
+                  className="border border-border bg-secondary px-2.5 py-1 text-xs font-bold text-foreground shadow-glass-sm"
                 >
                   {cafe.mainCategory}
                 </Badge>
@@ -63,7 +63,7 @@ export function CafeHeader({ cafe, className }: CafeHeaderProps) {
               {cafe.priceRange ? (
                 <Badge
                   variant="outline"
-                  className="border-2 border-border bg-card px-2.5 py-1 font-mono text-xs font-bold text-foreground shadow-hard-sm"
+                  className="glass px-2.5 py-1 font-mono text-xs font-bold text-foreground shadow-glass-sm"
                 >
                   {cafe.priceRange}
                 </Badge>
@@ -71,7 +71,7 @@ export function CafeHeader({ cafe, className }: CafeHeaderProps) {
             </div>
 
             {/* Cafe Name */}
-            <h1 className="font-heading text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
               {cafe.name}
             </h1>
 

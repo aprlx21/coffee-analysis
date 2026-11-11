@@ -39,3 +39,9 @@ DB là Supabase Postgres, dùng **postgres.js** (`postgres`), KHÔNG phải Driz
 - Secret đọc qua `@/lib/env`. Thêm thư viện mới cần được đồng ý (xem AGENTS.md gốc).
 - Khi tạo folder mới ở đây, tạo kèm `AGENTS.md` mô tả: mục đích, biến env cần, cách test local.
 - Luôn kiểm tra quyền (authorization) ở server action/route trước khi gọi xuống đây.
+
+## Cache dữ liệu quán
+
+- `queries/snapshot.ts` đọc `v_cafe_directory` **một lần** (view nặng, ~2,4 s) và cache cả 115 quán (`cacheLife("days")`, tag `cafes`). `listCafes`, `getAllMapCafes`, `getFacets`, `getMapPoints` lọc/sắp xếp bằng JS trên snapshot này — không thêm query vào view.
+- Mọi query có `"use cache"` phải gắn `cacheTag(CACHE_TAG_CAFES)` (`cache-tags.ts`).
+- Sau khi cập nhật DB: `curl -X POST -H "Authorization: Bearer $REVALIDATE_SECRET" https://<domain>/api/revalidate` (thêm `?mode=hard` để xoá ngay thay vì stale-while-revalidate).

@@ -102,19 +102,14 @@ export function CafeFilterSidebar({
   const selectedItemObj = canonicalItems.find((i) => i.canonicalId === filters.item);
 
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-5 rounded-lg border-2 border-border bg-card p-4 text-card-foreground shadow-hard",
-        className,
-      )}
-    >
+    <div className={cn("flex flex-col gap-5 rounded-xl glass p-4 text-card-foreground shadow-glass", className)}>
       {/* Top Header of Sidebar */}
-      <div className="flex items-center justify-between border-b-2 border-border pb-3">
+      <div className="flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2">
           <Filter className="size-4 stroke-[2.5]" />
-          <h2 className="font-heading text-sm font-extrabold tracking-wide uppercase">Bộ Lọc</h2>
+          <h2 className="font-heading text-sm font-bold tracking-wide uppercase">Bộ Lọc</h2>
           {activeCount > 0 && (
-            <Badge variant="default" className="size-5 justify-center p-0 text-[10px] font-black">
+            <Badge variant="default" className="size-5 justify-center p-0 text-[10px] font-bold">
               {activeCount}
             </Badge>
           )}
@@ -137,7 +132,7 @@ export function CafeFilterSidebar({
       <div className="space-y-1.5">
         <label
           htmlFor="cafe-search"
-          className="font-heading text-xs font-extrabold tracking-wider text-muted-foreground uppercase"
+          className="font-heading text-xs font-bold tracking-wider text-muted-foreground uppercase"
         >
           Tìm kiếm quán
         </label>
@@ -167,9 +162,9 @@ export function CafeFilterSidebar({
       </div>
 
       {/* 2. Tiện ích Làm việc (Work Amenities) */}
-      <div className="space-y-2.5 border-t-2 border-border/10 pt-3">
+      <div className="space-y-2.5 border-t border-border/10 pt-3">
         <div className="flex items-center justify-between">
-          <h3 className="font-heading text-xs font-extrabold tracking-wider text-foreground uppercase">
+          <h3 className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">
             💻 Tiện ích Làm việc
           </h3>
         </div>
@@ -226,8 +221,8 @@ export function CafeFilterSidebar({
       </div>
 
       {/* 3. Tiện ích Không gian (Space Amenities) */}
-      <div className="space-y-2.5 border-t-2 border-border/10 pt-3">
-        <h3 className="font-heading text-xs font-extrabold tracking-wider text-foreground uppercase">
+      <div className="space-y-2.5 border-t border-border/10 pt-3">
+        <h3 className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">
           🌿 Không gian & Phong cách
         </h3>
 
@@ -257,8 +252,8 @@ export function CafeFilterSidebar({
       </div>
 
       {/* 4. Thanh toán (Payment) */}
-      <div className="space-y-2.5 border-t-2 border-border/10 pt-3">
-        <h3 className="font-heading text-xs font-extrabold tracking-wider text-foreground uppercase">💳 Thanh toán</h3>
+      <div className="space-y-2.5 border-t border-border/10 pt-3">
+        <h3 className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">💳 Thanh toán</h3>
 
         <div className="space-y-1.5">
           {PAYMENT_AMENITIES.map((item) => {
@@ -287,10 +282,8 @@ export function CafeFilterSidebar({
 
       {/* 5. Loại hình quán (Categories) */}
       {facets.categories.length > 0 && (
-        <div className="space-y-2.5 border-t-2 border-border/10 pt-3">
-          <h3 className="font-heading text-xs font-extrabold tracking-wider text-foreground uppercase">
-            ☕ Loại hình quán
-          </h3>
+        <div className="space-y-2.5 border-t border-border/10 pt-3">
+          <h3 className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">☕ Loại hình quán</h3>
 
           <div className="space-y-1.5">
             {facets.categories.slice(0, 6).map((cat) => {
@@ -317,10 +310,8 @@ export function CafeFilterSidebar({
 
       {/* 6. Khoảng giá (Price Ranges) */}
       {facets.priceRanges.length > 0 && (
-        <div className="space-y-2.5 border-t-2 border-border/10 pt-3">
-          <h3 className="font-heading text-xs font-extrabold tracking-wider text-foreground uppercase">
-            💰 Khoảng giá
-          </h3>
+        <div className="space-y-2.5 border-t border-border/10 pt-3">
+          <h3 className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">💰 Khoảng giá</h3>
 
           <div className="space-y-1.5">
             {facets.priceRanges.map((pr) => {
@@ -347,8 +338,8 @@ export function CafeFilterSidebar({
       )}
 
       {/* 7. Đánh giá tối thiểu (Min Rating) */}
-      <div className="space-y-2.5 border-t-2 border-border/10 pt-3">
-        <h3 className="font-heading text-xs font-extrabold tracking-wider text-foreground uppercase">
+      <div className="space-y-2.5 border-t border-border/10 pt-3">
+        <h3 className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">
           ⭐ Đánh giá tối thiểu
         </h3>
 
@@ -384,9 +375,9 @@ export function CafeFilterSidebar({
       </div>
 
       {/* 8. Món đồ uống & Giá tối đa */}
-      <div className="space-y-2.5 border-t-2 border-border/10 pt-3">
+      <div className="space-y-2.5 border-t border-border/10 pt-3">
         <div className="flex items-center justify-between">
-          <h3 className="font-heading text-xs font-extrabold tracking-wider text-foreground uppercase">
+          <h3 className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">
             🥤 Món & Giá tối đa
           </h3>
           {filters.item && (
@@ -424,10 +415,10 @@ export function CafeFilterSidebar({
         </Select>
 
         {filters.item && (
-          <div className="mt-2 space-y-2 rounded-lg border-2 border-border bg-muted/40 p-3">
+          <div className="mt-2 space-y-2 rounded-lg border border-border bg-muted/40 p-3">
             <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-muted-foreground">Giá tối đa:</span>
-              <span className="font-mono text-sm font-black text-foreground">
+              <span className="font-mono text-sm font-bold text-foreground">
                 {(filters.maxItemPrice ?? 45000).toLocaleString("vi-VN")}đ
               </span>
             </div>
@@ -464,7 +455,7 @@ export function CafeFilterSidebar({
           variant="outline"
           size="sm"
           onClick={onReset}
-          className="mt-2 w-full border-2 border-border font-bold shadow-hard-sm"
+          className="mt-2 w-full border border-border font-bold shadow-glass-sm"
         >
           <RotateCcw className="mr-1.5 size-3.5" />
           XÓA TẤT CẢ BỘ LỌC ({activeCount})

@@ -34,20 +34,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden bg-background text-foreground">
+    <div className="relative min-h-screen w-full overflow-x-hidden text-foreground">
       {/* ======================================================== */}
       {/* Desktop Left Icon Rail (>= 768px, 72px fixed)           */}
       {/* ======================================================== */}
       <aside
         aria-label="Sidebar Navigation"
-        className="fixed inset-y-0 left-0 z-40 hidden w-[72px] flex-col items-center justify-between border-r-2 border-border bg-background py-5 md:flex"
+        className="fixed inset-y-0 left-0 z-40 hidden w-[72px] flex-col items-center justify-between glass-strong py-5 md:flex"
       >
         <div className="flex flex-col items-center gap-6">
           {/* Logo ☕ */}
           <Link
             href="/"
             aria-label="Cafe An Thượng - Trang chủ"
-            className="group flex size-12 items-center justify-center rounded-lg border-2 border-border bg-primary text-2xl font-black text-primary-foreground shadow-hard transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_var(--border)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            className="group flex size-12 items-center justify-center rounded-2xl border border-transparent bg-primary text-2xl font-bold text-primary-foreground shadow-glass transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glass-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
             ☕
           </Link>
@@ -66,17 +66,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           href={item.href}
                           aria-label={item.label}
                           className={cn(
-                            "group relative flex size-12 items-center justify-center rounded-lg transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                            "group relative flex size-12 items-center justify-center rounded-2xl transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring",
                             active
-                              ? "border-2 border-border bg-primary text-primary-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
-                              : "border-2 border-transparent text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground hover:shadow-hard-sm",
+                              ? "border border-border bg-primary text-primary-foreground shadow-glass"
+                              : "text-muted-foreground hover:-translate-y-0.5 hover:bg-card hover:text-foreground hover:shadow-glass-sm",
                           )}
                         />
                       }
                     >
                       <Icon className="size-5 stroke-[2.2]" />
                       {item.badge && (
-                        <span className="absolute -top-1 -right-1 flex h-4 items-center justify-center rounded-full border border-border bg-destructive px-1 text-[9px] font-black text-primary-foreground uppercase shadow-[1px_1px_0px_0px_var(--border)]">
+                        <span className="absolute -top-1 -right-1 flex h-4 items-center justify-center rounded-full border border-border bg-destructive px-1 text-[9px] font-bold text-destructive-foreground uppercase shadow-glass-sm">
                           {item.badge}
                         </span>
                       )}
@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <TooltipContent side="right" sideOffset={12}>
                       <span className="font-bold">{item.label}</span>
                       {item.badge && (
-                        <span className="py-0.2 ml-1 rounded border border-border bg-destructive px-1 text-[9px] font-black text-primary-foreground uppercase">
+                        <span className="py-0.2 ml-1 rounded border border-border bg-destructive px-1 text-[9px] font-bold text-destructive-foreground uppercase">
                           {item.badge}
                         </span>
                       )}
@@ -105,14 +105,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ======================================================== */}
       {/* Mobile Top Brand Bar (< 768px)                           */}
       {/* ======================================================== */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b-2 border-border bg-background px-4 md:hidden">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between glass-strong px-4 md:hidden">
         <Link href="/" className="flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <div className="flex size-8 items-center justify-center rounded-md border-2 border-border bg-primary text-base font-black text-primary-foreground shadow-hard-sm">
+          <div className="flex size-8 items-center justify-center rounded-xl bg-primary text-base font-bold text-primary-foreground shadow-glass-sm">
             ☕
           </div>
-          <span className="font-heading text-base font-extrabold tracking-tight text-foreground">Cafe An Thượng</span>
+          <span className="font-heading text-base font-bold tracking-tight text-foreground">Cafe An Thượng</span>
         </Link>
-        <span className="rounded-full border-2 border-border bg-muted px-2 py-0.5 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+        <span className="rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
           ĐÀ NẴNG
         </span>
       </header>
@@ -123,7 +123,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen flex-col md:pl-[72px]">
         <main className="flex-1 pb-20 md:pb-8">{children}</main>
 
-        <footer className="border-t-2 border-border bg-card/60 px-4 py-6 text-center text-xs font-semibold text-muted-foreground">
+        <footer className="border-t border-border bg-card/40 px-4 py-6 text-center text-xs font-medium text-muted-foreground">
           <div className="mx-auto max-w-5xl">Cafe An Thượng · Dữ liệu F&B khu phố Tây An Thượng, Đà Nẵng</div>
         </footer>
       </div>
@@ -133,7 +133,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ======================================================== */}
       <nav
         aria-label="Mobile Navigation"
-        className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t-2 border-border bg-background px-1 pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around glass-strong px-1 pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {APP_NAV_ITEMS.map((item) => {
           const active = isItemActive(pathname, item.href);
@@ -151,9 +151,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <div
                 className={cn(
                   "relative flex size-8 items-center justify-center rounded-lg transition-all",
-                  active
-                    ? "border-2 border-border bg-primary text-primary-foreground shadow-[2px_2px_0px_0px_var(--border)] active:translate-x-[2px] active:translate-y-[2px]"
-                    : "text-muted-foreground",
+                  active ? "bg-primary text-primary-foreground shadow-glass-sm" : "text-muted-foreground",
                 )}
               >
                 <Icon className="size-4 stroke-[2.2]" />

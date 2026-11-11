@@ -1,6 +1,8 @@
 import "server-only";
 
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
+
+import { CACHE_TAG_CAFES } from "../cache-tags";
 
 import { getSql } from "../client";
 import type { CanonicalItem, MenuGroup, MenuItem } from "../types";
@@ -65,7 +67,8 @@ const FALLBACK = { key: "misc", label: "Khác" };
 /** Thực đơn tiêu biểu (giá min/max theo món chuẩn hoá), nhóm theo loại món. */
 export async function getCafeMenu(placeId: string): Promise<MenuGroup[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("days");
+  cacheTag(CACHE_TAG_CAFES);
 
   try {
     const sql = getSql();
@@ -94,7 +97,8 @@ export async function getCafeMenu(placeId: string): Promise<MenuGroup[]> {
 /** 33 món chuẩn hoá, dùng cho bộ lọc "món". */
 export async function listCanonicalItems(): Promise<CanonicalItem[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("days");
+  cacheTag(CACHE_TAG_CAFES);
 
   try {
     const sql = getSql();

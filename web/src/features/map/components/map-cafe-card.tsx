@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Coffee, Laptop, MapPin, Plug, Snowflake, Star, Wifi } from "lucide-react";
+import { ArrowRight, Coffee, MapPin, Plug, Snowflake, Star, Trees, Wifi } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { resizeGoogleImage } from "@/lib/image-url";
 import { cn } from "@/lib/utils";
 import type { CafeCard } from "@/server/db";
+import { spatialCluster } from "../lib/classify";
 
 interface MapCafeCardProps {
   cafe: CafeCard;
@@ -27,6 +27,7 @@ export function MapCafeCard({ cafe, isSelected, isHovered, onSelect, onHover }: 
   const minPrice = formatPrice(cafe.drinkPriceMin);
   const maxPrice = formatPrice(cafe.drinkPriceMax);
   const priceDisplay = minPrice && maxPrice ? `${minPrice} - ${maxPrice}` : cafe.priceRange;
+  const cluster = spatialCluster(cafe.lat, cafe.lng);
 
   return (
     <div
@@ -35,35 +36,35 @@ export function MapCafeCard({ cafe, isSelected, isHovered, onSelect, onHover }: 
       onMouseLeave={() => onHover(false)}
       data-place-id={cafe.placeId}
       className={cn(
-        "group relative flex cursor-pointer flex-col gap-3 rounded-lg border-2 border-border p-3.5 text-card-foreground transition-all select-none",
+        "group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-border p-3.5 text-card-foreground transition-all duration-200 select-none",
         isSelected
-          ? "translate-x-[-2px] translate-y-[-2px] border-foreground bg-primary/15 ring-2 shadow-hard-card ring-primary"
+          ? "-translate-y-0.5 border-primary/60 glass-strong ring-2 shadow-glass-lg ring-primary/40"
           : isHovered
-            ? "-translate-x-0.5 -translate-y-0.5 border-foreground bg-muted/50 shadow-hard-card"
-            : "bg-card shadow-hard hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-foreground hover:bg-muted/30 hover:shadow-hard-card",
+            ? "-translate-y-0.5 border-border glass-strong shadow-glass-lg"
+            : "glass shadow-glass hover:-translate-y-0.5 hover:glass-strong hover:shadow-glass-lg",
       )}
     >
       <div className="flex gap-3">
         {/* Cover thumbnail */}
-        <div className="relative size-20 shrink-0 overflow-hidden rounded-md border-2 border-border bg-muted sm:size-24">
+        <div className="relative size-20 shrink-0 overflow-hidden rounded-lg border border-border/80 bg-muted sm:size-24">
           {cafe.featuredImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={resizeGoogleImage(cafe.featuredImage, 240, 240) ?? undefined}
               alt={cafe.name}
               loading="lazy"
-              className="size-full object-cover text-transparent transition-transform duration-300 group-hover:scale-105"
+              className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
-            <div className="flex size-full items-center justify-center bg-primary/20">
-              <Coffee className="size-6 stroke-[2] text-foreground/50" />
+            <div className="flex size-full items-center justify-center bg-primary/10">
+              <Coffee className="size-6 stroke-[1.8] text-foreground/40" />
             </div>
           )}
 
           {/* Rating tag overlay on image */}
           {ratingText && (
-            <div className="absolute top-1 left-1 flex items-center gap-0.5 rounded border border-border bg-primary px-1.5 py-0.5 text-[10px] font-black text-primary-foreground shadow-hard-sm">
-              <Star className="size-2.5 fill-foreground stroke-foreground" />
+            <div className="absolute top-1 left-1 flex items-center gap-0.5 rounded-md glass-strong px-1.5 py-0.5 text-[10px] font-bold text-foreground shadow-glass-sm">
+              <Star className="size-2.5 fill-amber-500 text-amber-500" />
               <span>{ratingText}</span>
             </div>
           )}
@@ -72,81 +73,90 @@ export function MapCafeCard({ cafe, isSelected, isHovered, onSelect, onHover }: 
         {/* Content */}
         <div className="flex flex-1 flex-col justify-between overflow-hidden">
           <div>
-            {/* Category / Work score badges */}
+            {/* Badges: Cluster + Category + Work score */}
             <div className="mb-1 flex flex-wrap items-center gap-1.5">
+              <span
+                className="rounded-full px-2 py-0.5 text-[9px] font-bold text-white shadow-xs"
+                style={{ backgroundColor: cluster.color }}
+              >
+                {cluster.shortLabel}
+              </span>
               {cafe.mainCategory && (
                 <span className="text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
                   {cafe.mainCategory}
                 </span>
               )}
               {cafe.workScore !== null && cafe.workScore > 0 && (
-                <span className="py-0.2 rounded border border-border bg-primary/30 px-1 text-[9px] font-black text-foreground">
+                <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold text-foreground">
                   💻 {cafe.workScore}/100
                 </span>
               )}
             </div>
 
             {/* Name */}
-            <h3 className="line-clamp-1 font-heading text-sm leading-tight font-extrabold text-foreground group-hover:text-foreground">
+            <h3 className="line-clamp-1 font-heading text-sm font-bold text-foreground transition-colors group-hover:text-primary">
               {cafe.name}
             </h3>
 
             {/* Address */}
             <div className="mt-1 line-clamp-1 flex items-center gap-1 text-xs text-muted-foreground">
-              <MapPin className="size-3 shrink-0 stroke-[2.5]" />
+              <MapPin className="size-3 shrink-0 text-primary" />
               <span className="truncate">{cafe.shortAddress || cafe.address || "An Thượng, Đà Nẵng"}</span>
             </div>
           </div>
 
-          {/* Bottom row: Price & Reviews */}
+          {/* Price Range & Quick Link */}
           <div className="mt-2 flex items-center justify-between gap-2 border-t border-border/40 pt-1.5 text-xs">
-            <span className="font-mono font-bold text-foreground">{priceDisplay || "Chưa có giá"}</span>
+            <span className="font-mono text-xs font-semibold text-foreground">
+              {priceDisplay ? priceDisplay : "Chưa có giá"}
+            </span>
 
-            {cafe.reviews !== null && cafe.reviews > 0 && (
-              <span className="text-[11px] font-medium text-muted-foreground">({cafe.reviews} đánh giá)</span>
-            )}
+            <Link
+              href={`/quan/${cafe.placeId}`}
+              onClick={(e) => e.stopPropagation()}
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "h-6 px-2 text-[11px] font-bold text-primary hover:bg-primary/10 hover:text-primary",
+              )}
+            >
+              <span>Chi tiết</span>
+              <ArrowRight className="ml-0.5 size-3" />
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Amenities Chips row */}
+      {/* Facilities row */}
       <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-        {cafe.hasWifi && (
-          <Badge variant="secondary" className="h-5 px-1.5 py-0 text-[10px] font-bold">
-            <Wifi className="mr-1 size-2.5 stroke-[2.5]" />
-            Wi-Fi
-          </Badge>
+        {(cafe.hasWifi || cafe.laptopFriendly) && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2 py-0.5 text-[10px] font-medium text-foreground">
+            <Wifi className="size-2.5 text-primary" />
+            <span>Wifi</span>
+          </span>
         )}
         {cafe.hasAc && (
-          <Badge variant="secondary" className="h-5 px-1.5 py-0 text-[10px] font-bold">
-            <Snowflake className="mr-1 size-2.5 stroke-[2.5]" />
-            Máy lạnh
-          </Badge>
+          <span className="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2 py-0.5 text-[10px] font-medium text-foreground">
+            <Snowflake className="size-2.5 text-sky-500" />
+            <span>Máy lạnh</span>
+          </span>
         )}
         {cafe.hasOutlets && (
-          <Badge variant="secondary" className="h-5 px-1.5 py-0 text-[10px] font-bold">
-            <Plug className="mr-1 size-2.5 stroke-[2.5]" />Ổ cắm
-          </Badge>
+          <span className="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2 py-0.5 text-[10px] font-medium text-foreground">
+            <Plug className="size-2.5 text-amber-500" />
+            <span>Ổ cắm</span>
+          </span>
         )}
-        {cafe.laptopFriendly && (
-          <Badge variant="secondary" className="h-5 px-1.5 py-0 text-[10px] font-bold">
-            <Laptop className="mr-1 size-2.5 stroke-[2.5]" />
-            Làm việc
-          </Badge>
+        {cafe.outdoorSeating && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2 py-0.5 text-[10px] font-medium text-foreground">
+            <Trees className="size-2.5 text-emerald-500" />
+            <span>Ngoài trời</span>
+          </span>
         )}
-
-        {/* View detail link button */}
-        <Link
-          href={`/quan/${cafe.placeId}`}
-          onClick={(e) => e.stopPropagation()}
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "xs" }),
-            "ml-auto text-[11px] font-bold text-foreground hover:border-border hover:bg-primary",
-          )}
-        >
-          <span>Chi tiết</span>
-          <ArrowRight className="ml-1 size-3 stroke-[2.5]" />
-        </Link>
+        {cafe.petFriendly && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2 py-0.5 text-[10px] font-medium text-foreground">
+            <span>🐾 Thú cưng</span>
+          </span>
+        )}
       </div>
     </div>
   );

@@ -28,15 +28,12 @@ export function RatingDistribution({ rating, reviews, reviewsPerRating, classNam
   return (
     <div
       data-slot="rating-distribution"
-      className={cn(
-        "flex flex-col gap-4 rounded-lg border-2 border-border bg-card p-4 shadow-hard-card sm:p-5",
-        className,
-      )}
+      className={cn("flex flex-col gap-4 rounded-xl glass p-4 shadow-glass-card sm:p-5", className)}
     >
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b-2 border-border pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-14 items-center justify-center rounded-lg border-2 border-border bg-primary shadow-hard-sm">
-            <span className="font-heading text-2xl font-black text-primary-foreground">
+          <div className="flex size-14 items-center justify-center rounded-lg border border-border bg-primary shadow-glass-sm">
+            <span className="font-heading text-2xl font-bold text-primary-foreground">
               {rating !== null ? rating.toFixed(1) : "—"}
             </span>
           </div>
@@ -60,7 +57,7 @@ export function RatingDistribution({ rating, reviews, reviewsPerRating, classNam
           </div>
         </div>
 
-        <div className="rounded border-2 border-border bg-muted px-2.5 py-1 text-xs font-bold text-foreground">
+        <div className="rounded border border-border bg-muted px-2.5 py-1 text-xs font-bold text-foreground">
           ĐÁNH GIÁ GOOGLE MAPS
         </div>
       </div>
@@ -75,9 +72,9 @@ export function RatingDistribution({ rating, reviews, reviewsPerRating, classNam
                 <span className="flex w-7 shrink-0 items-center gap-0.5 text-foreground">
                   {star} <Star className="size-3 fill-foreground stroke-none" />
                 </span>
-                <div className="relative h-3.5 flex-1 overflow-hidden rounded-full border-2 border-border bg-muted">
+                <div className="relative h-3.5 flex-1 overflow-hidden rounded-full border border-border bg-muted">
                   <div
-                    className="h-full border-r-2 border-border bg-primary transition-all duration-300"
+                    className="h-full border-r border-border bg-primary transition-all duration-300"
                     style={{ width: `${pct}%` }}
                   />
                 </div>

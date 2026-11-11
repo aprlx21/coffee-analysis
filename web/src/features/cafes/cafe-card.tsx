@@ -62,13 +62,13 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
     return (
       <div
         className={cn(
-          "group/card relative flex w-full max-w-[280px] flex-col overflow-hidden rounded-lg border-2 border-border bg-card text-card-foreground shadow-hard-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard",
+          "group/card relative flex w-full max-w-[280px] flex-col overflow-hidden rounded-xl glass text-card-foreground shadow-glass-sm transition-all hover:-translate-y-0.5 hover:shadow-glass",
           className,
         )}
       >
         <Link href={`/quan/${cafe.placeId}`} className="block overflow-hidden">
           {/* Thumbnail */}
-          <div className="relative aspect-[16/9] w-full overflow-hidden border-b-2 border-border bg-muted">
+          <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
             {imageSrc && !imgError ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
@@ -80,12 +80,12 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
                 className="size-full object-cover text-transparent transition-transform duration-300 group-hover/card:scale-105"
               />
             ) : (
-              <div className="flex size-full items-center justify-center bg-muted text-xl font-black text-muted-foreground">
+              <div className="flex size-full items-center justify-center bg-muted text-xl font-bold text-muted-foreground">
                 ☕ {initial}
               </div>
             )}
             {isWorkFriendly && (
-              <span className="py-0.2 absolute top-1.5 left-1.5 rounded-full border border-border bg-primary px-1.5 text-[9px] font-black text-primary-foreground uppercase shadow-hard-sm">
+              <span className="py-0.2 absolute top-1.5 left-1.5 rounded-full border border-border bg-primary px-1.5 text-[9px] font-bold text-primary-foreground uppercase shadow-glass-sm">
                 LÀM VIỆC TỐT
               </span>
             )}
@@ -120,7 +120,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
   return (
     <article
       className={cn(
-        "group/card relative flex h-full flex-col overflow-hidden rounded-lg border-2 border-border bg-card text-card-foreground shadow-hard-card transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_var(--border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-hard-sm",
+        "group/card relative flex h-full flex-col overflow-hidden rounded-xl glass text-card-foreground shadow-glass-card transition-all hover:-translate-y-0.5 hover:shadow-glass-lg active:translate-y-0 active:shadow-glass-sm",
         className,
       )}
     >
@@ -129,7 +129,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
         className="flex h-full flex-col outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {/* Cover image container */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden border-b-2 border-border bg-muted">
+        <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-border bg-muted">
           {imageSrc && !imgError ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
@@ -142,7 +142,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
             />
           ) : (
             <div className="flex size-full flex-col items-center justify-center bg-muted p-4 text-center select-none">
-              <span className="text-4xl font-black text-muted-foreground/80">{initial}</span>
+              <span className="text-4xl font-bold text-muted-foreground/80">{initial}</span>
               <span className="mt-1 text-[11px] font-bold text-muted-foreground">Cafe An Thượng</span>
             </div>
           )}
@@ -152,7 +152,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
             {isWorkFriendly && (
               <Badge
                 variant="default"
-                className="border-2 border-border bg-primary text-[10px] font-black tracking-wider text-primary-foreground uppercase shadow-hard-sm"
+                className="border border-border bg-primary text-[10px] font-bold tracking-wider text-primary-foreground uppercase shadow-glass-sm"
               >
                 💻 LÀM VIỆC TỐT
               </Badge>
@@ -160,7 +160,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
             {isHot && (
               <Badge
                 variant="destructive"
-                className="border-2 border-border bg-destructive text-[10px] font-black tracking-wider text-primary-foreground uppercase shadow-hard-sm"
+                className="border border-border bg-destructive text-[10px] font-bold tracking-wider text-primary-foreground uppercase shadow-glass-sm"
               >
                 🔥 HOT
               </Badge>
@@ -169,7 +169,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
 
           {/* Work Score Pill */}
           {cafe.workScore != null && cafe.workScore > 0 && (
-            <div className="absolute top-2.5 right-2.5 z-10 rounded-md border-2 border-border bg-card/95 px-1.5 py-0.5 font-mono text-[10px] font-bold text-foreground shadow-hard-sm">
+            <div className="absolute top-2.5 right-2.5 z-10 rounded-md border border-border bg-card/95 px-1.5 py-0.5 font-mono text-[10px] font-bold text-foreground shadow-glass-sm">
               💻 {cafe.workScore}/100
             </div>
           )}
@@ -201,7 +201,7 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
           </div>
 
           {/* Bottom row: Price and Amenities */}
-          <div className="space-y-2 border-t-2 border-border/10 pt-2.5">
+          <div className="space-y-2 border-t border-border/10 pt-2.5">
             {/* Price row */}
             <div className="flex items-center justify-between">
               <span className="font-mono text-xs font-bold text-foreground">{priceDisplay}</span>

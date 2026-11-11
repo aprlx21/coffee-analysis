@@ -25,7 +25,7 @@ export function MapControls() {
   };
 
   return (
-    <div className="leaflet-top leaflet-right pointer-events-auto z-[1000] m-3 flex flex-col gap-2">
+    <div className="pointer-events-auto absolute bottom-6 left-3 z-[900] flex flex-col gap-1.5">
       <TooltipProvider delay={150}>
         {/* Reset to An Thượng */}
         <Tooltip>
@@ -33,18 +33,18 @@ export function MapControls() {
             render={
               <Button
                 type="button"
-                variant="default"
+                variant="outline"
                 size="icon-sm"
                 onClick={handleResetCenter}
                 aria-label="Về trung tâm An Thượng"
-                className="size-9 rounded-md border-2 border-border bg-primary text-primary-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
+                className="size-9 rounded-lg glass text-foreground shadow-glass hover:-translate-y-0.5 hover:shadow-glass-lg active:translate-y-0"
               />
             }
           >
-            <LocateFixed className="size-4 stroke-[2.5]" />
+            <LocateFixed className="size-4 stroke-[2.2] text-primary" />
           </TooltipTrigger>
-          <TooltipContent side="left" sideOffset={8}>
-            <span className="font-bold">Về An Thượng 🎯</span>
+          <TooltipContent side="right" sideOffset={8}>
+            <span className="text-xs font-semibold">Về trung tâm An Thượng 🎯</span>
           </TooltipContent>
         </Tooltip>
 
@@ -57,15 +57,15 @@ export function MapControls() {
                 variant="outline"
                 size="icon-sm"
                 onClick={handleZoomIn}
-                aria-label="Phóng to"
-                className="size-9 rounded-md border-2 border-border bg-card text-card-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
+                aria-label="Phóng to bản đồ"
+                className="size-9 rounded-lg glass text-foreground shadow-glass hover:-translate-y-0.5 hover:shadow-glass-lg active:translate-y-0"
               />
             }
           >
-            <Plus className="size-4 stroke-[2.5]" />
+            <Plus className="size-4 stroke-[2.2]" />
           </TooltipTrigger>
-          <TooltipContent side="left" sideOffset={8}>
-            <span className="font-bold">Phóng to (+)</span>
+          <TooltipContent side="right" sideOffset={8}>
+            <span className="text-xs font-semibold">Phóng to (+)</span>
           </TooltipContent>
         </Tooltip>
 
@@ -78,15 +78,15 @@ export function MapControls() {
                 variant="outline"
                 size="icon-sm"
                 onClick={handleZoomOut}
-                aria-label="Thu nhỏ"
-                className="size-9 rounded-md border-2 border-border bg-card text-card-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
+                aria-label="Thu nhỏ bản đồ"
+                className="size-9 rounded-lg glass text-foreground shadow-glass hover:-translate-y-0.5 hover:shadow-glass-lg active:translate-y-0"
               />
             }
           >
-            <Minus className="size-4 stroke-[2.5]" />
+            <Minus className="size-4 stroke-[2.2]" />
           </TooltipTrigger>
-          <TooltipContent side="left" sideOffset={8}>
-            <span className="font-bold">Thu nhỏ (-)</span>
+          <TooltipContent side="right" sideOffset={8}>
+            <span className="text-xs font-semibold">Thu nhỏ (-)</span>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

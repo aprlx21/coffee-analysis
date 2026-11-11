@@ -19,12 +19,12 @@ export default function GlobalErrorPage({ error, reset }: { error: Error & { dig
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-16 text-center">
-      <div className="mx-auto max-w-lg rounded-xl border-2 border-border bg-card p-6 shadow-hard-card sm:p-8">
-        <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-lg border-2 border-border bg-destructive text-primary-foreground shadow-hard">
+      <div className="mx-auto max-w-lg rounded-xl glass p-6 shadow-glass-card sm:p-8">
+        <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-lg border border-border bg-destructive text-destructive-foreground shadow-glass">
           <AlertTriangle className="size-8" />
         </div>
 
-        <h1 className="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">Đã xảy ra lỗi tải trang</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Đã xảy ra lỗi tải trang</h1>
 
         <p className="mt-3 text-sm font-medium text-muted-foreground sm:text-base">
           {isDatabaseError
