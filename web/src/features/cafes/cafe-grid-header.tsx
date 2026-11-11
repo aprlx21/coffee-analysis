@@ -160,7 +160,7 @@ export function CafeGridHeader({
             >
               <SelectTrigger className="h-9 w-[170px] text-xs sm:w-[190px]">
                 <SelectValue placeholder="Sắp xếp theo...">
-                  {(val: string | null) => (val && SORT_LABELS[val as SortKey]) || "Sắp xếp..."}
+                  {filters.sort ? SORT_LABELS[filters.sort] : undefined}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>

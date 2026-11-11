@@ -411,9 +411,7 @@ export function CafeFilterSidebar({
         >
           <SelectTrigger className="w-full text-xs">
             <SelectValue placeholder="Chọn món đồ uống...">
-              {(val: string | null) =>
-                val ? (canonicalItems.find((i) => i.canonicalId === val)?.displayName ?? val) : "Chọn món đồ uống..."
-              }
+              {filters.item ? canonicalItems.find((i) => i.canonicalId === filters.item)?.displayName : undefined}
             </SelectValue>
           </SelectTrigger>
           <SelectContent className="max-h-60">

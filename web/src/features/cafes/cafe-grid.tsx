@@ -27,6 +27,12 @@ export function CafeGrid({ items, viewMode, total, onReset, className }: CafeGri
         <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
           Không có quán nào khớp với các điều kiện lọc hiện tại. Thử bỏ bớt tiện ích hoặc xóa từ khóa tìm kiếm xem nhé!
         </p>
+        <p className="mt-3 max-w-lg rounded-lg border border-dashed border-border bg-muted/50 p-2.5 text-xs text-muted-foreground">
+          💡 <strong>Gợi ý kỹ thuật:</strong> Nếu bạn vừa triển khai web lên Vercel, hãy đảm bảo đã cấu hình biến môi
+          trường <code className="font-mono font-bold">DATABASE_URL</code> (hoặc{" "}
+          <code className="font-mono font-bold">SUPABASE_DB_URL</code>) trong phần Vercel Dashboard → Settings →
+          Environment Variables.
+        </p>
         <Button variant="default" onClick={onReset} className="mt-6 font-bold shadow-hard-sm">
           <RotateCcw className="mr-1.5 size-4 stroke-[2.5]" />
           XÓA TẤT CẢ BỘ LỌC
