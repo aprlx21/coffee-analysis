@@ -18,7 +18,17 @@ const envSchema = z.object({
   RATE_LIMIT_SALT: z.string().default("coffee_analysis_salt_2026"),
 
   // --- Database (tuỳ chọn) — xem src/server/AGENTS.md ---
-  DATABASE_URL: z.string().optional(),
+  DATABASE_URL: z
+    .string()
+    .optional()
+    .transform(
+      (val) =>
+        val ||
+        process.env.SUPABASE_DB_URL ||
+        process.env.POSTGRES_URL ||
+        process.env.POSTGRES_PRISMA_URL ||
+        process.env.DATABASE_URL_UNPOOLED,
+    ),
 });
 
 const parsed = envSchema.safeParse(process.env);
