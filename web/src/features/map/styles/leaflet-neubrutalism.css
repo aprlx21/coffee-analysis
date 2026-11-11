@@ -1,0 +1,145 @@
+@import "leaflet/dist/leaflet.css";
+
+/* ======================================================== */
+/* Neubrutalism Leaflet Map Theme Overrides                 */
+/* ======================================================== */
+
+.leaflet-container {
+  font-family:
+    var(--font-sans),
+    system-ui,
+    -apple-system,
+    sans-serif !important;
+  background-color: var(--muted) !important;
+  outline: none;
+}
+
+/* Custom Marker DivIcon */
+.neubrutalism-marker-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.neubrutalism-marker-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background-color: var(--primary, #ffe600);
+  color: var(--primary-foreground, #000000);
+  border: 2px solid var(--border, #000000);
+  border-radius: 6px;
+  box-shadow: 2px 2px 0px 0px var(--border, #000000);
+  padding: 3px 7px;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+  transform-origin: center center;
+}
+
+.neubrutalism-marker-pill:hover,
+.neubrutalism-marker-pill.is-hovered {
+  background-color: #000000 !important;
+  color: #ffe600 !important;
+  border-color: #000000 !important;
+  transform: translate(-1px, -1px) scale(1.1);
+  box-shadow: 3px 3px 0px 0px #000000 !important;
+  z-index: 1000 !important;
+}
+
+.neubrutalism-marker-pill.is-active {
+  background-color: #000000 !important;
+  color: #ffe600 !important;
+  border-color: #000000 !important;
+  transform: translate(-2px, -2px) scale(1.18);
+  box-shadow:
+    3px 3px 0px 0px #ffe600,
+    5px 5px 0px 0px #000000 !important;
+  z-index: 1001 !important;
+}
+
+/* Neubrutalism Popup */
+.leaflet-popup-content-wrapper {
+  background: var(--card, #ffffff) !important;
+  color: var(--card-foreground, #000000) !important;
+  border: 2px solid var(--border, #000000) !important;
+  border-radius: 8px !important;
+  box-shadow: 6px 6px 0px 0px var(--border, #000000) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: inherit !important;
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.leaflet-popup-tip-container {
+  display: none !important;
+}
+
+.leaflet-popup-close-button {
+  top: 6px !important;
+  right: 6px !important;
+  width: 22px !important;
+  height: 22px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--card, #ffffff) !important;
+  border: 2px solid var(--border, #000000) !important;
+  border-radius: 4px !important;
+  color: var(--foreground, #000000) !important;
+  box-shadow: 1px 1px 0px 0px var(--border, #000000) !important;
+  font-family: var(--font-sans), sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  z-index: 10 !important;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease !important;
+}
+
+.leaflet-popup-close-button:hover {
+  background: var(--primary, #ffe600) !important;
+  color: #000000 !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 2px 2px 0px 0px var(--border, #000000) !important;
+}
+
+.leaflet-popup-close-button:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: none !important;
+}
+
+/* Neubrutalism Attribution Control */
+.leaflet-control-attribution {
+  background: var(--card, #ffffff) !important;
+  border-top: 2px solid var(--border, #000000) !important;
+  border-left: 2px solid var(--border, #000000) !important;
+  box-shadow: 2px 2px 0px 0px var(--border, #000000) !important;
+  font-family: var(--font-sans), sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  color: var(--muted-foreground, #404040) !important;
+  padding: 2px 6px !important;
+  border-top-left-radius: 6px !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--foreground, #000000) !important;
+  font-weight: 700 !important;
+  text-decoration: underline !important;
+}

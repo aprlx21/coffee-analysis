@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function CafeDetailPage({ params }: PageProps) {
+async function CafeDetailContent({ params }: PageProps) {
   const { placeId } = await params;
   const cafe = await getCafe(placeId);
 
@@ -77,5 +78,13 @@ export default async function CafeDetailPage({ params }: PageProps) {
         ) : null}
       </div>
     </div>
+  );
+}
+
+export default function CafeDetailPage(props: PageProps) {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-5xl px-4 py-8">Đang tải chi tiết quán...</div>}>
+      <CafeDetailContent {...props} />
+    </Suspense>
   );
 }

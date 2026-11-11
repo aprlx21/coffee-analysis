@@ -1,9 +1,9 @@
 import "server-only";
 
-/**
- * Public API của lớp AI. Feature chỉ import từ "@/ai", không import file con.
- * Khi tích hợp SDK (xem .agents/skills/ai-integration), export thêm các hàm
- * như `generateReply()` ở đây.
- */
-export { aiConfig, assertAIEnabled } from "./config";
-export { systemPrompt } from "./prompts/system";
+export * from "./config";
+export * from "./model";
+export * from "./prompts/system";
+export * from "./tools/search-cafes";
+export * from "./tools/get-cafe-detail";
+export * from "./tools/get-cafe-menu";
+export * from "./tools/compare-item-prices";

@@ -11,9 +11,11 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
   // --- AI (tuỳ chọn) — xem src/ai/AGENTS.md ---
-  AI_PROVIDER: z.string().optional(),
-  AI_MODEL: z.string().optional(),
+  AI_PROVIDER: z.string().default("groq"),
+  AI_MODEL: z.string().default("qwen/qwen3.8-27b"),
   AI_API_KEY: z.string().min(1).optional(),
+  GROQ_API_KEY: z.string().min(1).optional(),
+  RATE_LIMIT_SALT: z.string().default("coffee_analysis_salt_2026"),
 
   // --- Database (tuỳ chọn) — xem src/server/AGENTS.md ---
   DATABASE_URL: z.string().optional(),

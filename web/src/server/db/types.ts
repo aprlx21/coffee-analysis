@@ -88,3 +88,45 @@ export interface MapPoint {
   featuredImage: string | null;
   priceRange: string | null;
 }
+
+export interface AnalyticsKpi {
+  totalShops: number;
+  avgRating: number;
+  wifiCount: number;
+  wifiPercent: number;
+  laptopFriendlyCount: number;
+  laptopFriendlyPercent: number;
+  menuOcrCount: number;
+  menuPriceCount: number;
+}
+
+export interface PriceRangeStat {
+  range: string;
+  label: string;
+  count: number;
+  percentage: number;
+}
+
+export interface BenchmarkDrinkItem {
+  canonicalId: string;
+  displayName: string;
+  shopCount: number;
+  priceMin: number;
+  priceMedian: number;
+  priceMax: number;
+}
+
+export interface AmenityStat {
+  key: string;
+  label: string;
+  count: number;
+  percentage: number;
+  isInferred?: boolean;
+}
+
+export interface AnalyticsData {
+  kpi: AnalyticsKpi;
+  priceRanges: PriceRangeStat[];
+  benchmarkMenu: BenchmarkDrinkItem[];
+  amenities: AmenityStat[];
+}

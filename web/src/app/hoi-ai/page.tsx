@@ -1,21 +1,13 @@
 import type { Metadata } from "next";
-import { Sparkles } from "lucide-react";
 
-import { ComingSoon } from "@/components/coming-soon";
+import { AskAiView } from "@/features/ask-ai";
 
 export const metadata: Metadata = {
-  title: "Hỏi AI",
-  description: "Trợ lý AI tìm quán cafe chuẩn gu tại An Thượng.",
+  title: "Hỏi AI · Trợ lý Cà phê An Thượng",
+  description:
+    "Trợ lý thông minh khai thác dữ liệu từ 115 quán cafe, hàng nghìn đánh giá thực tế và bảng giá menu bóc tách OCR tại An Thượng, Đà Nẵng.",
 };
 
 export default function HoiAiPage() {
-  return (
-    <ComingSoon
-      title="Hỏi AI Cà Phê"
-      description="Trợ lý thông minh hỗ trợ tìm kiếm không gian ngồi làm việc, quán yên tĩnh có ổ điện hay điểm hẹn bạn bè qua trò chuyện tự nhiên."
-      badgeText="SOON"
-      icon={<Sparkles className="size-8 stroke-[2.5]" />}
-      plannedMilestone="MVP v0.1"
-    />
-  );
+  return <AskAiView />;
 }
