@@ -1,7 +1,21 @@
 "use client";
 
 import React from "react";
-import { CircleDot, Layers, MapPin, Palette, Plug, Search, Snowflake, Trees, Wifi, X } from "lucide-react";
+import {
+  CircleDot,
+  CreditCard,
+  Layers,
+  MapPin,
+  Palette,
+  Plug,
+  Search,
+  Snowflake,
+  Trees,
+  UtensilsCrossed,
+  Volume2,
+  Wifi,
+  X,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -39,6 +53,10 @@ const AMENITY_BUTTONS: { key: AmenityFilterKey; label: string; icon: React.React
   { key: "ac", label: "Máy lạnh", icon: <Snowflake className="size-3 text-sky-500" /> },
   { key: "outlets", label: "Ổ cắm", icon: <Plug className="size-3 text-amber-500" /> },
   { key: "pet", label: "Thú cưng", icon: <span className="text-[11px] leading-none">🐾</span> },
+  { key: "quiet", label: "Yên tĩnh", icon: <Volume2 className="size-3 text-indigo-400" /> },
+  { key: "parking", label: "Chỗ đỗ xe", icon: <span className="text-[11px] font-bold text-blue-500">P</span> },
+  { key: "card", label: "Quẹt thẻ", icon: <CreditCard className="size-3 text-purple-400" /> },
+  { key: "menu", label: "Có menu", icon: <UtensilsCrossed className="size-3 text-rose-400" /> },
 ];
 
 export function MapToolbar({
@@ -187,34 +205,39 @@ export function MapToolbar({
         </div>
       </div>
 
-      {/* Row 2: Compass + Amenity Pills (AND logic) + Counter */}
-      <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-0.5">
-        {/* Compass inline at top-left of row 2 */}
-        <MapCompass />
+      {/* Row 2: Compass + Amenity Scrollable Strip (AND logic) + Counter */}
+      <div className="flex items-center gap-2">
+        {/* Compass pinned on the left */}
+        <div className="shrink-0">
+          <MapCompass />
+        </div>
 
-        {AMENITY_BUTTONS.map(({ key, label, icon }) => {
-          const isSelected = selectedAmenities.includes(key);
-          return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => onToggleAmenity(key)}
-              aria-pressed={isSelected}
-              className={cn(
-                "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold whitespace-nowrap shadow-xs transition-all",
-                isSelected
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "border border-border/70 bg-card/80 text-foreground hover:bg-muted/80",
-              )}
-            >
-              {icon}
-              <span>{label}</span>
-            </button>
-          );
-        })}
+        {/* Scrollable Amenity Strip with soft scrollbar */}
+        <div className="flex min-w-0 flex-1 [scrollbar-width:thin] [scrollbar-color:var(--primary)_transparent] items-center gap-1.5 overflow-x-auto pt-0.5 pb-1 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary/40 hover:[&::-webkit-scrollbar-thumb]:bg-primary/70 [&::-webkit-scrollbar-track]:bg-muted/30">
+          {AMENITY_BUTTONS.map(({ key, label, icon }) => {
+            const isSelected = selectedAmenities.includes(key);
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => onToggleAmenity(key)}
+                aria-pressed={isSelected}
+                className={cn(
+                  "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold whitespace-nowrap shadow-xs transition-all",
+                  isSelected
+                    ? "scale-102 bg-primary text-primary-foreground shadow-sm"
+                    : "border border-border/70 bg-card/80 text-foreground hover:bg-muted/80",
+                )}
+              >
+                {icon}
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
 
-        {/* Counter - always separated with ml-auto and no overlap */}
-        <div className="ml-auto flex shrink-0 items-center pl-2">
+        {/* Counter pinned on the right */}
+        <div className="shrink-0 pl-1">
           <Badge
             variant="outline"
             className="h-7 shrink-0 border-border/80 bg-card/80 px-2.5 text-[11px] font-semibold whitespace-nowrap text-foreground shadow-xs"

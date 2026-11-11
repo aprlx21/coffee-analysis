@@ -52,8 +52,8 @@ export function MapView({
         scrollWheelZoom={true}
         className="z-0 size-full"
       >
-        {/* Base Layer Switcher (L.control.layers, topright) */}
-        <LayersControl position="topright">
+        {/* Base Layer Switcher (L.control.layers, bottomright - góc dưới phải) */}
+        <LayersControl position="bottomright">
           <LayersControl.BaseLayer checked name={TILE_LAYERS[0].name}>
             <TileLayer
               attribution={TILE_LAYERS[0].attribution}

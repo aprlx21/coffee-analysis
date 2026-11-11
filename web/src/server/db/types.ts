@@ -24,6 +24,8 @@ export interface CafeCard {
   outdoorSeating: boolean;
   petFriendly: boolean;
   quiet: boolean;
+  hasParking?: boolean;
+  acceptsCard?: boolean;
 }
 
 export interface Cafe extends CafeCard {

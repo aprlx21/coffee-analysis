@@ -89,6 +89,18 @@ export function MapPageView({ cafes }: MapPageViewProps) {
           case "pet":
             if (!cafe.petFriendly) return false;
             break;
+          case "quiet":
+            if (!cafe.quiet) return false;
+            break;
+          case "parking":
+            if (!cafe.hasParking) return false;
+            break;
+          case "card":
+            if (!cafe.acceptsCard) return false;
+            break;
+          case "menu":
+            if (!cafe.hasMenu) return false;
+            break;
         }
       }
 

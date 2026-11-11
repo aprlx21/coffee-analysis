@@ -24,7 +24,8 @@ export function cardColumns() {
     coalesce(c.has_wifi, false) as "hasWifi", coalesce(c.laptop_friendly, false) as "laptopFriendly",
     coalesce(c.has_ac, false) as "hasAc", coalesce(c.has_outlets, false) as "hasOutlets",
     coalesce(c.outdoor_seating, false) as "outdoorSeating", coalesce(c.pet_friendly, false) as "petFriendly",
-    coalesce(c.quiet, false) as "quiet"`;
+    coalesce(c.quiet, false) as "quiet", coalesce(c.has_parking, false) as "hasParking",
+    coalesce(c.accepts_card, false) as "acceptsCard"`;
 }
 
 /** Danh sách quán (phân trang PAGE_SIZE), lọc/sắp xếp trên snapshot đã cache — xem `snapshot.ts`. */

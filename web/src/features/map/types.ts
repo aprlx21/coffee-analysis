@@ -11,7 +11,7 @@ export interface MapSyncState {
   hoverCafe: (placeId: string | null) => void;
 }
 
-export type AmenityFilterKey = "outdoor" | "wifi" | "ac" | "outlets" | "pet";
+export type AmenityFilterKey = "outdoor" | "wifi" | "ac" | "outlets" | "pet" | "quiet" | "parking" | "card" | "menu";
 
 export interface MapFilterState {
   searchQuery: string;
