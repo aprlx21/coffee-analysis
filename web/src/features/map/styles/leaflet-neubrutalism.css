@@ -14,6 +14,23 @@
   outline: none;
 }
 
+/* Neubrutalism Area Tooltip */
+.neubrutalism-area-tooltip {
+  background: var(--card, #ffffff) !important;
+  color: var(--card-foreground, #000000) !important;
+  border: 2px solid var(--border, #000000) !important;
+  border-radius: 6px !important;
+  box-shadow: 3px 3px 0px 0px var(--border, #000000) !important;
+  font-family: var(--font-sans), sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  padding: 4px 8px !important;
+}
+
+.neubrutalism-area-tooltip::before {
+  border-top-color: var(--border, #000000) !important;
+}
+
 /* Custom Marker DivIcon */
 .neubrutalism-marker-icon {
   background: transparent !important;

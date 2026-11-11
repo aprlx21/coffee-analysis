@@ -1,13 +1,20 @@
 "use client";
 
 import { useMap } from "react-leaflet";
-import { LocateFixed, Minus, Plus } from "lucide-react";
+import { LocateFixed, Minus, Plus, Layers } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AN_THUONG_CENTER, DEFAULT_ZOOM } from "../types";
 
-export function MapControls() {
+export type TileLayerType = "voyager" | "satellite" | "positron";
+
+interface MapControlsProps {
+  currentLayer: TileLayerType;
+  onChangeLayer: (layer: TileLayerType) => void;
+}
+
+export function MapControls({ currentLayer, onChangeLayer }: MapControlsProps) {
   const map = useMap();
 
   const handleZoomIn = () => {
@@ -24,9 +31,45 @@ export function MapControls() {
     });
   };
 
+  const cycleLayer = () => {
+    const next: Record<TileLayerType, TileLayerType> = {
+      voyager: "satellite",
+      satellite: "positron",
+      positron: "voyager",
+    };
+    onChangeLayer(next[currentLayer]);
+  };
+
+  const layerLabels: Record<TileLayerType, string> = {
+    voyager: "Bản đồ Chi tiết 🗺️",
+    satellite: "Ảnh Vệ tinh Thật 🛰️",
+    positron: "Bản đồ Tối giản 🏙️",
+  };
+
   return (
     <div className="leaflet-top leaflet-right pointer-events-auto z-[1000] m-3 flex flex-col gap-2">
       <TooltipProvider delay={150}>
+        {/* Toggle Map Layer (Satellite / Voyager / Positron) */}
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                type="button"
+                variant="outline"
+                size="icon-sm"
+                onClick={cycleLayer}
+                aria-label="Đổi kiểu bản đồ"
+                className="size-9 rounded-md border-2 border-border bg-card text-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
+              />
+            }
+          >
+            <Layers className="size-4 stroke-[2.5]" />
+          </TooltipTrigger>
+          <TooltipContent side="left" sideOffset={8}>
+            <span className="font-bold">{layerLabels[currentLayer]} (Bấm để đổi)</span>
+          </TooltipContent>
+        </Tooltip>
+
         {/* Reset to An Thượng */}
         <Tooltip>
           <TooltipTrigger
@@ -57,8 +100,8 @@ export function MapControls() {
                 variant="outline"
                 size="icon-sm"
                 onClick={handleZoomIn}
-                aria-label="Phóng to bản đồ"
-                className="size-9 rounded-md border-2 border-border bg-card text-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
+                aria-label="Phóng to"
+                className="size-9 rounded-md border-2 border-border bg-card text-card-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
               />
             }
           >
@@ -78,8 +121,8 @@ export function MapControls() {
                 variant="outline"
                 size="icon-sm"
                 onClick={handleZoomOut}
-                aria-label="Thu nhỏ bản đồ"
-                className="size-9 rounded-md border-2 border-border bg-card text-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
+                aria-label="Thu nhỏ"
+                className="size-9 rounded-md border-2 border-border bg-card text-card-foreground shadow-hard active:translate-x-[2px] active:translate-y-[2px]"
               />
             }
           >

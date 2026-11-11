@@ -4,7 +4,7 @@ import { Coffee, Loader2 } from "lucide-react";
 
 import { parseCafeFilters } from "@/features/cafes/schema";
 import { MapPageView } from "@/features/map";
-import { getFacets, getMapPoints, listCafes } from "@/server/db";
+import { getAllMapCafes, getFacets, getMapPoints } from "@/server/db";
 
 export const metadata: Metadata = {
   title: "Bản đồ quán cafe An Thượng",
@@ -60,21 +60,12 @@ async function BanDoContent({ searchParams }: BanDoPageProps) {
   const resolvedSearchParams = await searchParams;
   const filters = parseCafeFilters(resolvedSearchParams);
 
-  // Fetch map points, first page of cafes, and facets concurrently
-  const [mapPoints, firstPage, facets] = await Promise.all([
+  // Fetch map points, all cafes for map view, and facets concurrently in a single round-trip
+  const [mapPoints, allCafes, facets] = await Promise.all([
     getMapPoints(filters),
-    listCafes(filters, filters.sort, 1),
+    getAllMapCafes(filters, filters.sort),
     getFacets(),
   ]);
-
-  // Fetch remaining pages so all markers have matching cards in the list
-  let allCafes = firstPage.items;
-  if (firstPage.pageCount > 1) {
-    const remainingPages = await Promise.all(
-      Array.from({ length: firstPage.pageCount - 1 }, (_, i) => listCafes(filters, filters.sort, i + 2)),
-    );
-    allCafes = [...allCafes, ...remainingPages.flatMap((page) => page.items)];
-  }
 
   return <MapPageView points={mapPoints} cafes={allCafes} total={mapPoints.length} facets={facets} filters={filters} />;
 }

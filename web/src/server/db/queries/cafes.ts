@@ -11,7 +11,7 @@ import { buildWhere } from "./filters";
 export const PAGE_SIZE = 24;
 
 /** Cột nhẹ cho card. Ép kiểu số để postgres.js không trả string (numeric). */
-function cardColumns() {
+export function cardColumns() {
   const sql = getSql();
   return sql`
     c.place_id as "placeId", c.name, c.main_category as "mainCategory", c.address,
@@ -26,7 +26,7 @@ function cardColumns() {
     coalesce(c.quiet, false) as "quiet"`;
 }
 
-function orderBy(sort: SortKey) {
+export function orderBy(sort: SortKey) {
   const sql = getSql();
   switch (sort) {
     case "reviews":
