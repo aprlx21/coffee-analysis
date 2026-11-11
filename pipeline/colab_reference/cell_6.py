@@ -1,0 +1,1 @@
+!pip -q install "psycopg[binary]" sqlalchemy
