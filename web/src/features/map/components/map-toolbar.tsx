@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CircleDot, Clock, Layers, MapPin, Palette, Plug, Search, Snowflake, Trees, Wifi, X } from "lucide-react";
+import { CircleDot, Layers, MapPin, Palette, Plug, Search, Snowflake, Trees, Wifi, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,6 @@ interface MapToolbarProps {
   onToggleAmenity: (amenity: AmenityFilterKey) => void;
   totalFiltered: number;
   totalAll: number;
-  onOpenTraffic: () => void;
 }
 
 const AMENITY_BUTTONS: { key: AmenityFilterKey; label: string; icon: React.ReactNode }[] = [
@@ -56,7 +55,6 @@ export function MapToolbar({
   onToggleAmenity,
   totalFiltered,
   totalAll,
-  onOpenTraffic,
 }: MapToolbarProps) {
   const activeColorModeLabel = COLOR_MODES.find((m) => m.id === colorMode)?.label ?? "Tô màu";
 
@@ -217,17 +215,8 @@ export function MapToolbar({
           })}
         </div>
 
-        {/* Counter & Traffic Button */}
-        <div className="ml-auto flex shrink-0 items-center gap-1.5 pl-2">
-          <button
-            type="button"
-            onClick={onOpenTraffic}
-            aria-label="Mở biểu đồ lưu lượng khách 24h"
-            className="flex h-7 shrink-0 cursor-pointer items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary/20 active:scale-98"
-          >
-            <Clock className="size-3" />
-            <span>Lưu lượng 24h</span>
-          </button>
+        {/* Counter */}
+        <div className="ml-auto shrink-0 pl-2">
           <Badge
             variant="outline"
             className="h-7 border-border/80 bg-card/80 px-2.5 text-[11px] font-semibold text-foreground shadow-xs"

@@ -9,7 +9,6 @@ import { MapWrapper } from "./map-container";
 import { MapListPanel } from "./map-list-panel";
 import { MapMobileDrawer } from "./map-mobile-drawer";
 import { MapToolbar } from "./map-toolbar";
-import { MapTrafficSheet } from "./map-traffic-sheet";
 
 export interface MapPageViewProps {
   cafes: CafeCard[];
@@ -26,7 +25,6 @@ export function MapPageView({ cafes }: MapPageViewProps) {
   // Selection & hover sync
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [hoveredPlaceId, setHoveredPlaceId] = useState<string | null>(null);
-  const [trafficOpen, setTrafficOpen] = useState(false);
 
   const handleSelectCafe = (placeId: string) => {
     setSelectedPlaceId(placeId);
@@ -130,7 +128,6 @@ export function MapPageView({ cafes }: MapPageViewProps) {
             onToggleAmenity={handleToggleAmenity}
             totalFiltered={filteredCafes.length}
             totalAll={cafes.length}
-            onOpenTraffic={() => setTrafficOpen(true)}
           />
 
           <MapWrapper
@@ -167,13 +164,6 @@ export function MapPageView({ cafes }: MapPageViewProps) {
           />
         </div>
       </div>
-
-      {/* 24-Hour Foot-traffic Sheet (Monday -> Sunday) */}
-      <MapTrafficSheet
-        open={trafficOpen}
-        onOpenChange={setTrafficOpen}
-        selectedCafe={selectedPlaceId ? cafes.find((c) => c.placeId === selectedPlaceId) : null}
-      />
     </div>
   );
 }

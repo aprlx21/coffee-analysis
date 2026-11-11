@@ -1,4 +1,4 @@
-import rawTrafficData from "./traffic-data.json";
+import rawTrafficData from "../data/traffic-data.json";
 
 export type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
 

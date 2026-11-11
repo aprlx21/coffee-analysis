@@ -4,7 +4,7 @@ import { ArrowRight, Lightbulb, Map } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { BenchmarkMenu, KpiTiles, PriceDistribution, TopAmenities } from "@/features/analytics";
+import { BenchmarkMenu, FootTrafficAnalysis, KpiTiles, PriceDistribution, TopAmenities } from "@/features/analytics";
 import { cn } from "@/lib/utils";
 import { getAnalyticsData } from "@/server/db";
 
@@ -61,7 +61,12 @@ export default async function PhanTichPage() {
         </section>
       </div>
 
-      {/* 4. Market Benchmark Menu Table */}
+      {/* 4. 24-Hour Foot Traffic Analysis (Mon -> Sun) */}
+      <section className="mb-8" aria-label="Phân bố lưu lượng khách 24h">
+        <FootTrafficAnalysis />
+      </section>
+
+      {/* 5. Market Benchmark Menu Table */}
       <section className="mb-8" aria-label="Bảng giá đồ uống điển hình">
         <BenchmarkMenu items={data.benchmarkMenu} />
       </section>
