@@ -8,6 +8,10 @@ type Sql = ReturnType<typeof postgres>;
 
 const globalForDb = globalThis as unknown as { __sql?: Sql };
 
+export function hasDatabaseUrl(): boolean {
+  return Boolean(env.DATABASE_URL);
+}
+
 /**
  * Singleton postgres.js (Supabase transaction pooler :6543).
  * - `prepare: false` bắt buộc với pooler transaction mode.

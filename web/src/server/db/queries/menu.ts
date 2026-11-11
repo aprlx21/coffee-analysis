@@ -67,23 +67,28 @@ export async function getCafeMenu(placeId: string): Promise<MenuGroup[]> {
   "use cache";
   cacheLife("hours");
 
-  const sql = getSql();
-  const rows = await sql<MenuItem[]>`
-    select canonical_id as "canonicalId", display_name as "displayName",
-      price_min::float8 as "priceMin", price_max::float8 as "priceMax",
-      coalesce(match_uncertain, 0) <> 0 as "matchUncertain"
-    from v_typical_price_v2 where place_id = ${placeId}
-    order by display_name`;
+  try {
+    const sql = getSql();
+    const rows = await sql<MenuItem[]>`
+      select canonical_id as "canonicalId", display_name as "displayName",
+        price_min::float8 as "priceMin", price_max::float8 as "priceMax",
+        coalesce(match_uncertain, 0) <> 0 as "matchUncertain"
+      from v_typical_price_v2 where place_id = ${placeId}
+      order by display_name`;
 
-  const buckets = new Map<string, MenuGroup>();
-  for (const item of rows) {
-    const g = GROUPS.find((x) => x.ids.includes(item.canonicalId)) ?? FALLBACK;
-    const bucket = buckets.get(g.key) ?? { key: g.key, label: g.label, items: [] };
-    bucket.items.push(item);
-    buckets.set(g.key, bucket);
+    const buckets = new Map<string, MenuGroup>();
+    for (const item of rows) {
+      const g = GROUPS.find((x) => x.ids.includes(item.canonicalId)) ?? FALLBACK;
+      const bucket = buckets.get(g.key) ?? { key: g.key, label: g.label, items: [] };
+      bucket.items.push(item);
+      buckets.set(g.key, bucket);
+    }
+    const order = [...GROUPS.map((g) => g.key), FALLBACK.key];
+    return order.flatMap((k) => buckets.get(k) ?? []);
+  } catch (err) {
+    console.error(`Lỗi khi truy vấn getCafeMenu(${placeId}):`, err);
+    return [];
   }
-  const order = [...GROUPS.map((g) => g.key), FALLBACK.key];
-  return order.flatMap((k) => buckets.get(k) ?? []);
 }
 
 /** 33 món chuẩn hoá, dùng cho bộ lọc "món". */
@@ -91,9 +96,50 @@ export async function listCanonicalItems(): Promise<CanonicalItem[]> {
   "use cache";
   cacheLife("hours");
 
-  const sql = getSql();
-  const rows = await sql<CanonicalItem[]>`
-    select canonical_id as "canonicalId", display_name as "displayName"
-    from canonical_item order by display_name`;
-  return [...rows];
+  try {
+    const sql = getSql();
+    const rows = await sql<CanonicalItem[]>`
+      select canonical_id as "canonicalId", display_name as "displayName"
+      from canonical_item order by display_name`;
+    return [...rows];
+  } catch (err) {
+    console.error("Lỗi khi truy vấn listCanonicalItems, dùng fallback danh sách món:", err);
+    return DEFAULT_CANONICAL_ITEMS;
+  }
 }
+
+const DEFAULT_CANONICAL_ITEMS: CanonicalItem[] = [
+  { canonicalId: "ca_phe_den", displayName: "Cà phê đen" },
+  { canonicalId: "ca_phe_sua", displayName: "Cà phê sữa" },
+  { canonicalId: "ca_phe_sua_tuoi", displayName: "Cà phê sữa tươi" },
+  { canonicalId: "bac_xiu", displayName: "Bạc xỉu" },
+  { canonicalId: "ca_phe_muoi", displayName: "Cà phê muối" },
+  { canonicalId: "ca_phe_dua", displayName: "Cà phê dừa" },
+  { canonicalId: "ca_phe_trung", displayName: "Cà phê trứng" },
+  { canonicalId: "americano", displayName: "Americano" },
+  { canonicalId: "espresso", displayName: "Espresso" },
+  { canonicalId: "latte", displayName: "Latte" },
+  { canonicalId: "cappuccino", displayName: "Cappuccino" },
+  { canonicalId: "flat_white", displayName: "Flat White" },
+  { canonicalId: "mocha", displayName: "Mocha" },
+  { canonicalId: "caramel_macchiato", displayName: "Caramel Macchiato" },
+  { canonicalId: "cold_brew", displayName: "Cold Brew" },
+  { canonicalId: "tra_dao", displayName: "Trà đào" },
+  { canonicalId: "tra_chanh", displayName: "Trà chanh" },
+  { canonicalId: "tra_tac", displayName: "Trà tắc" },
+  { canonicalId: "tra_vai", displayName: "Trà vải" },
+  { canonicalId: "tra_sen_vang", displayName: "Trà sen vàng" },
+  { canonicalId: "tra_xanh", displayName: "Trà xanh" },
+  { canonicalId: "hong_tra", displayName: "Hồng trà" },
+  { canonicalId: "tra_sua_tran_chau", displayName: "Trà sữa trân châu" },
+  { canonicalId: "matcha_latte", displayName: "Matcha Latte" },
+  { canonicalId: "nuoc_cam", displayName: "Nước cam" },
+  { canonicalId: "nuoc_dua", displayName: "Nước dừa" },
+  { canonicalId: "chanh_day", displayName: "Chanh dây" },
+  { canonicalId: "soda_chanh", displayName: "Soda chanh" },
+  { canonicalId: "sinh_to_bo", displayName: "Sinh tố bơ" },
+  { canonicalId: "sinh_to_dau", displayName: "Sinh tố dâu" },
+  { canonicalId: "sinh_to_xoai", displayName: "Sinh tố xoài" },
+  { canonicalId: "sua_chua", displayName: "Sữa chua" },
+  { canonicalId: "cacao", displayName: "Cacao" },
+];

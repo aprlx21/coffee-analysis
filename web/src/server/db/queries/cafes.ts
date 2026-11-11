@@ -51,21 +51,33 @@ export async function listCafes(
   "use cache";
   cacheLife("hours");
 
-  const sql = getSql();
-  const where = buildWhere(filters);
   const safePage = Math.max(1, Math.floor(page));
-  const [{ total }] = await sql<{ total: number }[]>`
-    select count(*)::int as total from v_cafe_directory c where ${where}`;
-  const items = await sql<CafeCard[]>`
-    select ${cardColumns()} from v_cafe_directory c where ${where}
-    order by ${orderBy(sort)} limit ${PAGE_SIZE} offset ${(safePage - 1) * PAGE_SIZE}`;
-  return {
-    items: [...items],
-    total,
-    page: safePage,
-    pageSize: PAGE_SIZE,
-    pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)),
-  };
+
+  try {
+    const sql = getSql();
+    const where = buildWhere(filters);
+    const [{ total }] = await sql<{ total: number }[]>`
+      select count(*)::int as total from v_cafe_directory c where ${where}`;
+    const items = await sql<CafeCard[]>`
+      select ${cardColumns()} from v_cafe_directory c where ${where}
+      order by ${orderBy(sort)} limit ${PAGE_SIZE} offset ${(safePage - 1) * PAGE_SIZE}`;
+    return {
+      items: [...items],
+      total,
+      page: safePage,
+      pageSize: PAGE_SIZE,
+      pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)),
+    };
+  } catch (err) {
+    console.error("Lỗi khi truy vấn listCafes:", err);
+    return {
+      items: [],
+      total: 0,
+      page: safePage,
+      pageSize: PAGE_SIZE,
+      pageCount: 1,
+    };
+  }
 }
 
 /** Chi tiết một quán; null nếu không tồn tại. */
@@ -73,22 +85,27 @@ export async function getCafe(placeId: string): Promise<Cafe | null> {
   "use cache";
   cacheLife("hours");
 
-  const sql = getSql();
-  const rows = await sql`
-    select ${cardColumns()}, c.categories, c.phone, c.website, c.maps_link as "mapsLink",
-      c.description, c.hours, c.closed_on as "closedOn", c.reviews_per_rating as "reviewsPerRating",
-      c.review_keywords as "reviewKeywords", c.featured_reviews as "featuredReviews",
-      coalesce(c.menu_item_count, 0)::int as "menuItemCount",
-      c.ac_source as "acSource", c.outlets_source as "outletsSource", to_jsonb(c) as raw
-    from v_cafe_directory c where c.place_id = ${placeId} limit 1`;
-  const row = rows[0];
-  if (!row) return null;
-  const { raw, ...rest } = row as Record<string, unknown> & { raw: Record<string, unknown> };
-  const flags: Record<string, boolean> = {};
-  for (const [k, v] of Object.entries(raw)) if (typeof v === "boolean") flags[k] = v;
-  return {
-    ...(rest as unknown as Omit<Cafe, "flags">),
-    categories: (rest.categories as string[]) ?? [],
-    flags,
-  };
+  try {
+    const sql = getSql();
+    const rows = await sql`
+      select ${cardColumns()}, c.categories, c.phone, c.website, c.maps_link as "mapsLink",
+        c.description, c.hours, c.closed_on as "closedOn", c.reviews_per_rating as "reviewsPerRating",
+        c.review_keywords as "reviewKeywords", c.featured_reviews as "featuredReviews",
+        coalesce(c.menu_item_count, 0)::int as "menuItemCount",
+        c.ac_source as "acSource", c.outlets_source as "outletsSource", to_jsonb(c) as raw
+      from v_cafe_directory c where c.place_id = ${placeId} limit 1`;
+    const row = rows[0];
+    if (!row) return null;
+    const { raw, ...rest } = row as Record<string, unknown> & { raw: Record<string, unknown> };
+    const flags: Record<string, boolean> = {};
+    for (const [k, v] of Object.entries(raw)) if (typeof v === "boolean") flags[k] = v;
+    return {
+      ...(rest as unknown as Omit<Cafe, "flags">),
+      categories: (rest.categories as string[]) ?? [],
+      flags,
+    };
+  } catch (err) {
+    console.error(`Lỗi khi truy vấn getCafe(${placeId}):`, err);
+    return null;
+  }
 }
