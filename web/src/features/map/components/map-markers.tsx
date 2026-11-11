@@ -116,6 +116,7 @@ function ClusteredMarkersLayer({
         },
         {
           autoPan: true,
+          autoPanPadding: L.point(16, 76),
           closeButton: true,
         },
       );
@@ -269,7 +270,7 @@ export function MapMarkers({
             </Tooltip>
 
             {/* Popup chi tiết */}
-            <Popup autoPan={true} closeButton={true}>
+            <Popup autoPan={true} autoPanPadding={L.point(16, 76)} closeButton={true}>
               <MapPopup cafe={cafe} />
             </Popup>
           </CircleMarker>

@@ -29,11 +29,84 @@ interface StreamChunk {
 }
 
 const GENERIC_ERROR = "Không kết nối được với trợ lý AI. Bạn kiểm tra mạng rồi thử lại nhé.";
+const CHAT_STORAGE_KEY = "coffee_ai_chat_history";
 
 let idCounter = 0;
 function nextId(prefix: string): string {
   idCounter += 1;
   return `${prefix}-${Date.now().toString(36)}-${idCounter}`;
+}
+
+function loadSavedMessages(): ChatMessage[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.sessionStorage.getItem(CHAT_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed.map((m: unknown) => {
+        const item = (m && typeof m === "object" ? m : {}) as Record<string, unknown>;
+        return {
+          id: String(item.id || nextId("msg")),
+          role: item.role === "user" ? ("user" as const) : ("assistant" as const),
+          text: typeof item.text === "string" ? item.text : "",
+          tools: Array.isArray(item.tools) ? (item.tools as string[]) : [],
+          activeTool: null,
+          error: typeof item.error === "string" ? item.error : undefined,
+        };
+      });
+    }
+  } catch {
+    // Ignore corrupt data
+  }
+  return [];
+}
+
+function saveMessages(msgs: ChatMessage[]) {
+  if (typeof window === "undefined") return;
+  try {
+    if (msgs.length === 0) {
+      window.sessionStorage.removeItem(CHAT_STORAGE_KEY);
+    } else {
+      window.sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(msgs));
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+// Module-level in-memory store synchronized with sessionStorage and React
+let chatStore: ChatMessage[] | null = null;
+const chatListeners = new Set<() => void>();
+
+function notifyChatListeners() {
+  chatListeners.forEach((l) => l());
+}
+
+function subscribeChat(callback: () => void) {
+  chatListeners.add(callback);
+  return () => {
+    chatListeners.delete(callback);
+  };
+}
+
+function getChatSnapshot(): ChatMessage[] {
+  if (chatStore === null) {
+    chatStore = loadSavedMessages();
+  }
+  return chatStore;
+}
+
+function getServerChatSnapshot(): ChatMessage[] {
+  return [];
+}
+
+function updateChatStore(updater: (current: ChatMessage[]) => ChatMessage[]) {
+  const current = getChatSnapshot();
+  const next = updater(current);
+  chatStore = next;
+  saveMessages(next);
+  notifyChatListeners();
 }
 
 function parseQuota(payload: unknown): AiQuota | null {
@@ -52,15 +125,10 @@ function parseQuota(payload: unknown): AiQuota | null {
  * Tự đọc stream thay vì dùng `@ai-sdk/react` để không thêm dependency.
  */
 export function useAskAi() {
-  const [messages, setMessages] = React.useState<ChatMessage[]>([]);
+  const messages = React.useSyncExternalStore(subscribeChat, getChatSnapshot, getServerChatSnapshot);
   const [status, setStatus] = React.useState<ChatStatus>("idle");
   const [quota, setQuota] = React.useState<AiQuota | null>(null);
   const abortRef = React.useRef<AbortController | null>(null);
-  const messagesRef = React.useRef<ChatMessage[]>([]);
-
-  React.useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
 
   React.useEffect(() => {
     const controller = new AbortController();
@@ -80,7 +148,7 @@ export function useAskAi() {
   }, []);
 
   const patchMessage = React.useCallback((id: string, patch: (message: ChatMessage) => ChatMessage) => {
-    setMessages((current) => current.map((message) => (message.id === id ? patch(message) : message)));
+    updateChatStore((current) => current.map((message) => (message.id === id ? patch(message) : message)));
   }, []);
 
   const send = React.useCallback(
@@ -98,9 +166,10 @@ export function useAskAi() {
         activeTool: null,
       };
 
+      const currentMsgs = getChatSnapshot();
       // Chỉ gửi lịch sử có nội dung; bỏ các lượt lỗi.
-      const history = [...messagesRef.current.filter((message) => message.text && !message.error), userMessage];
-      setMessages((current) => [...current, userMessage, assistantMessage]);
+      const history = [...currentMsgs.filter((message) => message.text && !message.error), userMessage];
+      updateChatStore((current) => [...current, userMessage, assistantMessage]);
       setStatus("submitting");
 
       const controller = new AbortController();
@@ -231,7 +300,7 @@ export function useAskAi() {
 
   const reset = React.useCallback(() => {
     abortRef.current?.abort();
-    setMessages([]);
+    updateChatStore(() => []);
   }, []);
 
   return { messages, status, quota, send, stop, reset };

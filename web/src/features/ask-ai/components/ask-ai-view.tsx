@@ -4,7 +4,6 @@ import * as React from "react";
 import { CircleAlert, Coffee, Dog, Laptop, Receipt, RotateCcw, Send, Sparkles, Square, TrendingUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import { useAskAi, type AiQuota } from "../hooks/use-ask-ai";
@@ -136,13 +135,26 @@ export function AskAiView() {
   const { messages, status, quota, send, stop, reset } = useAskAi();
   const [input, setInput] = React.useState("");
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const stickToBottomRef = React.useRef(true);
 
   const busy = status !== "idle";
   const outOfQuota = quota !== null && quota.remaining <= 0;
   const resetTime = formatResetTime(quota?.resetAt ?? null);
   const lastMessageId = messages[messages.length - 1]?.id;
+
+  // Auto-resize textarea according to content
+  const adjustTextareaHeight = React.useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    const nextHeight = Math.min(textarea.scrollHeight, 140);
+    textarea.style.height = `${Math.max(44, nextHeight)}px`;
+  }, []);
+
+  React.useEffect(() => {
+    adjustTextareaHeight();
+  }, [input, adjustTextareaHeight]);
 
   // Tự cuộn xuống cuối khi có nội dung mới, trừ khi người dùng đang cuộn lên đọc lại.
   React.useEffect(() => {
@@ -159,7 +171,17 @@ export function AskAiView() {
     if (busy || outOfQuota || !text.trim()) return;
     stickToBottomRef.current = true;
     setInput("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "44px";
+    }
     void send(text);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+      event.preventDefault();
+      submit(input);
+    }
   };
 
   return (
@@ -175,9 +197,16 @@ export function AskAiView() {
         <div className="flex items-center gap-2">
           <QuotaMeter quota={quota} />
           {messages.length > 0 && (
-            <Button type="button" variant="outline" size="sm" onClick={reset}>
-              <RotateCcw className="stroke-[2.5]" />
-              Chat mới
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={reset}
+              className="gap-1.5 text-xs font-semibold"
+              title="Xóa lịch sử và tạo cuộc trò chuyện mới"
+            >
+              <RotateCcw className="size-3.5 stroke-[2.5]" />
+              Cuộc trò chuyện mới
             </Button>
           )}
         </div>
@@ -216,23 +245,23 @@ export function AskAiView() {
             </div>
           ) : (
             <form
-              className="flex items-center gap-2"
+              className="flex items-end gap-2"
               onSubmit={(event) => {
                 event.preventDefault();
                 submit(input);
               }}
             >
-              <Input
-                ref={inputRef}
-                type="text"
+              <textarea
+                ref={textareaRef}
                 value={input}
-                onChange={(event) => setInput(event.target.value)}
+                rows={1}
+                disabled={busy}
                 maxLength={MAX_INPUT_CHARS}
-                enterKeyHint="send"
-                autoComplete="off"
                 aria-label="Câu hỏi cho trợ lý AI"
-                placeholder="Hỏi về quán, giá đồ uống, tiện ích…"
-                className="h-11 flex-1 bg-background text-sm font-medium"
+                placeholder="Hỏi về quán, giá đồ uống, tiện ích… (Enter gửi, Shift+Enter xuống dòng)"
+                onChange={(event) => setInput(event.target.value)}
+                onKeyDown={handleKeyDown}
+                className="max-h-36 min-h-11 flex-1 resize-none rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
               />
               {busy ? (
                 <Button
@@ -241,7 +270,7 @@ export function AskAiView() {
                   size="icon-lg"
                   onClick={stop}
                   aria-label="Dừng trả lời"
-                  className="shrink-0"
+                  className="size-11 shrink-0"
                 >
                   <Square className="size-4 fill-current stroke-[2.5]" />
                 </Button>
@@ -251,7 +280,7 @@ export function AskAiView() {
                   size="icon-lg"
                   disabled={!input.trim()}
                   aria-label="Gửi câu hỏi"
-                  className="shrink-0"
+                  className="size-11 shrink-0"
                 >
                   <Send className="size-4 stroke-[2.5]" />
                 </Button>

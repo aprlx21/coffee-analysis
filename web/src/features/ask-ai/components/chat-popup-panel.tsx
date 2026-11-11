@@ -71,6 +71,18 @@ export default function ChatPopupPanel({ open, pathname, onClose, onAssistantRep
   const lastMessageId = messages[messages.length - 1]?.id;
   const suggestions = React.useMemo(() => buildSuggestions(pathname), [pathname]);
 
+  const adjustTextareaHeight = React.useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    const nextHeight = Math.min(textarea.scrollHeight, 120);
+    textarea.style.height = `${Math.max(40, nextHeight)}px`;
+  }, []);
+
+  React.useEffect(() => {
+    adjustTextareaHeight();
+  }, [input, adjustTextareaHeight]);
+
   React.useEffect(() => {
     const el = scrollRef.current;
     if (el && stickRef.current) el.scrollTop = el.scrollHeight;
@@ -93,6 +105,9 @@ export default function ChatPopupPanel({ open, pathname, onClose, onAssistantRep
     if (busy || outOfQuota || !text.trim()) return;
     stickRef.current = true;
     setInput("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "40px";
+    }
     void send(text);
   };
 
@@ -125,7 +140,14 @@ export default function ChatPopupPanel({ open, pathname, onClose, onAssistantRep
           </p>
         </div>
         {messages.length > 0 && (
-          <Button type="button" variant="ghost" size="icon-sm" onClick={reset} aria-label="Xóa cuộc trò chuyện">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={reset}
+            aria-label="Cuộc trò chuyện mới (Xóa lịch sử)"
+            title="Cuộc trò chuyện mới (Xóa lịch sử)"
+          >
             <RotateCcw className="stroke-[2.5]" />
           </Button>
         )}

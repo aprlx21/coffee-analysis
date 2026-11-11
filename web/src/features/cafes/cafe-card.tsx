@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import * as React from "react";
-import { MapPin, Star } from "lucide-react";
+import { Coffee, MapPin, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { resizeGoogleImage } from "@/lib/image-url";
@@ -49,13 +49,18 @@ function getFeaturedAmenities(cafe: CafeCardData): AmenityPill[] {
 }
 
 export function CafeCard({ cafe, variant = "default", className }: CafeCardProps) {
+  const [prevImage, setPrevImage] = React.useState(cafe.featuredImage);
   const [imgError, setImgError] = React.useState(false);
+
+  if (prevImage !== cafe.featuredImage) {
+    setPrevImage(cafe.featuredImage);
+    setImgError(false);
+  }
 
   const isWorkFriendly = (cafe.workScore ?? 0) >= 60;
   const isHot = (cafe.reviews ?? 0) >= 300 || ((cafe.rating ?? 0) >= 4.7 && (cafe.reviews ?? 0) >= 50);
   const featuredAmenities = getFeaturedAmenities(cafe);
   const priceDisplay = formatDrinkPrice(cafe);
-  const initial = cafe.name ? cafe.name.trim().charAt(0).toUpperCase() : "☕";
   const imageSrc = resizeGoogleImage(cafe.featuredImage, 640, 400);
 
   if (variant === "compact") {
@@ -80,8 +85,13 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
                 className="size-full object-cover text-transparent transition-transform duration-300 group-hover/card:scale-105"
               />
             ) : (
-              <div className="flex size-full items-center justify-center bg-muted text-xl font-bold text-muted-foreground">
-                ☕ {initial}
+              <div className="relative flex size-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-primary/15 via-card/70 to-accent/20 p-2 text-center select-none">
+                <div className="border-glass-border flex size-9 items-center justify-center rounded-xl border glass shadow-glass-sm">
+                  <Coffee className="size-4.5 stroke-[2.2] text-primary" />
+                </div>
+                <span className="mt-1 line-clamp-1 max-w-[90%] font-heading text-xs font-bold text-foreground">
+                  {cafe.name}
+                </span>
               </div>
             )}
             {isWorkFriendly && (
@@ -141,9 +151,18 @@ export function CafeCard({ cafe, variant = "default", className }: CafeCardProps
               className="size-full object-cover text-transparent transition-transform duration-300 group-hover/card:scale-105"
             />
           ) : (
-            <div className="flex size-full flex-col items-center justify-center bg-muted p-4 text-center select-none">
-              <span className="text-4xl font-bold text-muted-foreground/80">{initial}</span>
-              <span className="mt-1 text-[11px] font-bold text-muted-foreground">Cafe An Thượng</span>
+            <div className="relative flex size-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-primary/15 via-card/80 to-accent/25 p-4 text-center select-none">
+              <div className="pointer-events-none absolute -top-8 -right-8 size-28 rounded-full bg-primary/20 blur-xl" />
+              <div className="pointer-events-none absolute -bottom-8 -left-8 size-28 rounded-full bg-accent/25 blur-xl" />
+              <div className="border-glass-border relative z-10 flex size-13 items-center justify-center rounded-2xl border glass text-primary shadow-glass">
+                <Coffee className="size-6 stroke-[2.2]" />
+              </div>
+              <span className="relative z-10 mt-2 line-clamp-1 max-w-[85%] font-heading text-sm font-bold text-foreground">
+                {cafe.name}
+              </span>
+              <span className="relative z-10 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+                Cafe An Thượng
+              </span>
             </div>
           )}
 

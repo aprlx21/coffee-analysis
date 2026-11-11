@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Geist_Mono } from "next/font/google";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { ThemeProvider } from "@/components/theme-provider";
 import { ChatLauncher } from "@/features/ask-ai";
 import { siteConfig } from "@/lib/site-config";
 
@@ -28,12 +29,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang={siteConfig.locale} className={`${fontSans.variable} ${fontMono.variable} h-full antialiased`}>
+    <html
+      lang={siteConfig.locale}
+      suppressHydrationWarning
+      className={`${fontSans.variable} ${fontMono.variable} h-full antialiased`}
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('coffee_theme')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full">
-        <Suspense>
-          <AppShell>{children}</AppShell>
-          <ChatLauncher />
-        </Suspense>
+        <ThemeProvider>
+          <Suspense>
+            <AppShell>{children}</AppShell>
+            <ChatLauncher />
+          </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   );

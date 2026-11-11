@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
-import { BarChart3, Compass, Lightbulb, Map, Sparkles } from "lucide-react";
+import { BarChart3, Compass, Database, Lightbulb, Map, Sparkles } from "lucide-react";
 
+import { ThemeSegmented, ThemeToggle } from "@/components/theme-toggle";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
@@ -96,8 +97,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </TooltipProvider>
         </div>
 
-        {/* Footer version label on rail */}
-        <div className="flex flex-col items-center">
+        {/* Footer actions on rail: Theme Toggle & MVP label */}
+        <div className="flex flex-col items-center gap-3">
+          <ThemeToggle />
           <span className="font-mono text-[10px] font-bold text-muted-foreground">MVP</span>
         </div>
       </aside>
@@ -112,9 +114,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <span className="font-heading text-base font-bold tracking-tight text-foreground">Cafe An Thượng</span>
         </Link>
-        <span className="rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-          ĐÀ NẴNG
-        </span>
+        <div className="flex items-center gap-2">
+          <ThemeToggle className="size-8" />
+          <span className="rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+            ĐÀ NẴNG
+          </span>
+        </div>
       </header>
 
       {/* ======================================================== */}
@@ -123,8 +128,114 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen flex-col md:pl-[72px]">
         <main className="flex-1 pb-20 md:pb-8">{children}</main>
 
-        <footer className="border-t border-border bg-card/40 px-4 py-6 text-center text-xs font-medium text-muted-foreground">
-          <div className="mx-auto max-w-5xl">Cafe An Thượng · Dữ liệu F&B khu phố Tây An Thượng, Đà Nẵng</div>
+        <footer className="border-t border-border bg-card/60 px-4 py-8 text-xs font-medium text-muted-foreground backdrop-blur-md">
+          <div className="mx-auto flex max-w-5xl flex-col gap-8">
+            {/* Top row: Brand summary, metadata & data source badge */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="flex size-6 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground shadow-glass-sm">
+                    ☕
+                  </span>
+                  <span className="font-heading text-sm font-bold text-foreground">Cafe An Thượng</span>
+                </div>
+                <p className="max-w-md text-xs text-muted-foreground">
+                  Nền tảng tra cứu và phân tích thị trường quán cafe tại khu phố Tây An Thượng (Mỹ An, Ngũ Hành Sơn, Đà
+                  Nẵng).
+                </p>
+              </div>
+
+              {/* Data badge */}
+              <div className="flex items-center gap-2 self-start rounded-xl border border-border/80 bg-muted/60 px-3 py-2 text-xs font-medium text-foreground shadow-glass-sm sm:self-auto">
+                <Database className="size-4 shrink-0 stroke-[2.2] text-primary" />
+                <span className="text-[11px] leading-tight">
+                  <strong className="font-semibold text-foreground">
+                    Dữ liệu Google Maps & Menu OCR An Thượng, Đà Nẵng
+                  </strong>
+                  <br />
+                  <span className="text-muted-foreground">Cập nhật T11/2026 • 115 quán cafe</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Middle row: Navigation links and Theme picker */}
+            <div className="grid grid-cols-2 gap-6 border-t border-border/60 pt-6 sm:grid-cols-4">
+              <div>
+                <div className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">Tra cứu</div>
+                <ul className="mt-2.5 space-y-2 text-xs">
+                  <li>
+                    <Link href="/" className="transition-colors hover:text-primary">
+                      Khám phá danh sách
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/ban-do" className="transition-colors hover:text-primary">
+                      Bản đồ tương tác
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/hoi-ai" className="transition-colors hover:text-primary">
+                      Trợ lý AI An Thượng
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <div className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">
+                  Phân tích F&B
+                </div>
+                <ul className="mt-2.5 space-y-2 text-xs">
+                  <li>
+                    <Link href="/phan-tich" className="transition-colors hover:text-primary">
+                      Thị trường & Giá cả
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/insights" className="transition-colors hover:text-primary">
+                      Insights kinh doanh
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <div className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">
+                  Tiện ích phổ biến
+                </div>
+                <ul className="mt-2.5 space-y-2 text-xs">
+                  <li>
+                    <Link href="/?facility=laptop" className="transition-colors hover:text-primary">
+                      Làm việc laptop & Wifi
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/?facility=ac" className="transition-colors hover:text-primary">
+                      Có điều hòa / Máy lạnh
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/?facility=pet" className="transition-colors hover:text-primary">
+                      Thân thiện thú cưng
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <div className="font-heading text-xs font-bold tracking-wider text-foreground uppercase">Giao diện</div>
+                <div className="mt-2.5">
+                  <ThemeSegmented />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom copyright & attribution */}
+            <div className="flex flex-col items-center justify-between gap-2 border-t border-border/60 pt-6 text-[11px] text-muted-foreground sm:flex-row">
+              <div>© 2026 Cafe An Thượng. Dự án nghiên cứu F&B phi thương mại.</div>
+              <div>Xây dựng trên nền tảng Next.js 16, React 19, Tailwind CSS v4 & Supabase.</div>
+            </div>
+          </div>
         </footer>
       </div>
 
