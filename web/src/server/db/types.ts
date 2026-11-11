@@ -59,6 +59,9 @@ export interface MenuItem {
   priceMin: number | null;
   priceMax: number | null;
   matchUncertain: boolean;
+  isSuspicious?: boolean;
+  isUnusualPrice?: boolean;
+  warningNote?: string;
 }
 
 export interface MenuGroup {

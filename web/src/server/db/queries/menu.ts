@@ -62,6 +62,24 @@ const GROUPS: { key: string; label: string; ids: string[] }[] = [
   },
 ];
 
+export const COFFEE_CANONICAL_IDS = new Set([
+  "ca_phe_den",
+  "ca_phe_sua",
+  "ca_phe_sua_tuoi",
+  "bac_xiu",
+  "ca_phe_muoi",
+  "ca_phe_dua",
+  "ca_phe_trung",
+  "americano",
+  "espresso",
+  "latte",
+  "cappuccino",
+  "flat_white",
+  "mocha",
+  "caramel_macchiato",
+  "cold_brew",
+]);
+
 const FALLBACK = { key: "misc", label: "Khác" };
 
 /** Thực đơn tiêu biểu (giá min/max theo món chuẩn hoá), nhóm theo loại món. */
@@ -82,8 +100,20 @@ export async function getCafeMenu(placeId: string): Promise<MenuGroup[]> {
     const buckets = new Map<string, MenuGroup>();
     for (const item of rows) {
       const g = GROUPS.find((x) => x.ids.includes(item.canonicalId)) ?? FALLBACK;
+      const isCoffee = COFFEE_CANONICAL_IDS.has(item.canonicalId);
+      const isSuspicious =
+        (isCoffee && item.priceMin !== null && item.priceMin < 18000) ||
+        (item.priceMin !== null && item.priceMin < 12000);
+      const enrichedItem: MenuItem = {
+        ...item,
+        isSuspicious,
+        isUnusualPrice: isSuspicious,
+        warningNote: isSuspicious
+          ? `Mức giá ${item.priceMin?.toLocaleString("vi-VN")}đ thấp bất thường so với mặt bằng An Thượng (có thể là đồ uống mang về take-away hoặc OCR cần đối chiếu)`
+          : undefined,
+      };
       const bucket = buckets.get(g.key) ?? { key: g.key, label: g.label, items: [] };
-      bucket.items.push(item);
+      bucket.items.push(enrichedItem);
       buckets.set(g.key, bucket);
     }
     const order = [...GROUPS.map((g) => g.key), FALLBACK.key];

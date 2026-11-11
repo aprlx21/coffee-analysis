@@ -7,7 +7,7 @@ import { getCafeMenu } from "@/server/db/queries/menu";
 
 export const getCafeMenuTool = tool({
   description:
-    "Lấy danh sách các món đồ uống và mức giá bóc tách OCR theo từng nhóm (Cà phê, Trà & Matcha, Nước ép...) của một quán cafe.",
+    "Lấy danh sách các món đồ uống và mức giá bóc tách OCR theo từng nhóm (Cà phê, Trà & Matcha, Nước ép...) của một quán cafe. Lưu ý: các món có isSuspicious=true hoặc matchUncertain=true cần được lưu ý khi tư vấn cho người dùng.",
   inputSchema: z.object({
     placeId: z.string().describe("placeId định danh của quán cafe"),
   }),
@@ -21,6 +21,9 @@ export const getCafeMenuTool = tool({
           name: item.displayName,
           priceMin: item.priceMin,
           priceMax: item.priceMax,
+          matchUncertain: item.matchUncertain,
+          isSuspicious: item.isSuspicious,
+          warningNote: item.warningNote,
         })),
       })),
     };

@@ -95,7 +95,15 @@ export function MenuTable({ menu, mapsLink, className }: MenuTableProps) {
                           <div className="flex flex-wrap items-center gap-1.5">
                             <span className="font-heading text-sm font-bold text-foreground">{item.displayName}</span>
 
-                            {item.matchUncertain ? (
+                            {item.isSuspicious ? (
+                              <span
+                                title={item.warningNote ?? "Mức giá thấp bất thường so với khu vực, cần đối chiếu"}
+                                className="py-0.2 inline-flex items-center gap-0.5 rounded border border-border bg-amber-500/15 px-1 text-[10px] font-bold text-amber-600 dark:text-amber-400"
+                              >
+                                <AlertTriangle className="size-2.5 stroke-[2.5]" />
+                                Giá bất thường
+                              </span>
+                            ) : item.matchUncertain ? (
                               <span
                                 title="Món có độ tin cậy OCR cần đối chiếu thêm"
                                 className="py-0.2 inline-flex items-center gap-0.5 rounded border border-border bg-destructive/15 px-1 text-[10px] font-bold text-destructive"
