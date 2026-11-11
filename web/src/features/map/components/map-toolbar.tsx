@@ -187,39 +187,37 @@ export function MapToolbar({
         </div>
       </div>
 
-      {/* Row 2: Compass + Amenity Pills (AND logic) + Counter (Aligned at end) */}
-      <div className="no-scrollbar flex items-center justify-between gap-2 overflow-x-auto pb-0.5">
-        <div className="flex items-center gap-2">
-          {/* Compass inline at top-left of the toolbar */}
-          <MapCompass />
+      {/* Row 2: Compass + Amenity Pills (AND logic) + Counter */}
+      <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-0.5">
+        {/* Compass inline at top-left of row 2 */}
+        <MapCompass />
 
-          {AMENITY_BUTTONS.map(({ key, label, icon }) => {
-            const isSelected = selectedAmenities.includes(key);
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => onToggleAmenity(key)}
-                aria-pressed={isSelected}
-                className={cn(
-                  "flex h-7 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold shadow-xs transition-all",
-                  isSelected
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "border border-border/70 bg-card/80 text-foreground hover:bg-muted/80",
-                )}
-              >
-                {icon}
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </div>
+        {AMENITY_BUTTONS.map(({ key, label, icon }) => {
+          const isSelected = selectedAmenities.includes(key);
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onToggleAmenity(key)}
+              aria-pressed={isSelected}
+              className={cn(
+                "flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold whitespace-nowrap shadow-xs transition-all",
+                isSelected
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "border border-border/70 bg-card/80 text-foreground hover:bg-muted/80",
+              )}
+            >
+              {icon}
+              <span>{label}</span>
+            </button>
+          );
+        })}
 
-        {/* Counter */}
-        <div className="ml-auto shrink-0 pl-2">
+        {/* Counter - always separated with ml-auto and no overlap */}
+        <div className="ml-auto flex shrink-0 items-center pl-2">
           <Badge
             variant="outline"
-            className="h-7 border-border/80 bg-card/80 px-2.5 text-[11px] font-semibold text-foreground shadow-xs"
+            className="h-7 shrink-0 border-border/80 bg-card/80 px-2.5 text-[11px] font-semibold whitespace-nowrap text-foreground shadow-xs"
           >
             Hiện: <span className="ml-1 font-mono font-bold text-primary">{totalFiltered}</span> / {totalAll} quán
           </Badge>
