@@ -16,6 +16,8 @@ const envSchema = z.object({
   AI_API_KEY: z.string().min(1).optional(),
   GROQ_API_KEY: z.string().min(1).optional(),
   RATE_LIMIT_SALT: z.string().default("coffee_analysis_salt_2026"),
+  // Khóa Google AI Studio dùng cho embedding RAG; thiếu → searchKnowledge trả lỗi mềm.
+  GEMINI_API_KEY: z.string().min(1).optional(),
 
   // --- Làm mới cache dữ liệu quán qua POST /api/revalidate (tuỳ chọn; thiếu → route trả 503) ---
   REVALIDATE_SECRET: z.string().min(16).optional(),

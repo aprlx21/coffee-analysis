@@ -33,7 +33,7 @@ Câu trả lời render bằng `@/components/markdown` (bảng, danh sách, link
 ## Lưu ý
 
 - Khung chat cao theo viewport (`100dvh` trừ header/bottom-nav); vùng tin nhắn cuộn bên trong, tự bám đáy trừ khi người dùng cuộn lên.
-- Thêm tool mới ở `@/ai/tools` thì bổ sung nhãn tiếng Việt vào `TOOL_LABELS` / `TOOL_DONE_LABELS`.
+- Tool `searchKnowledge` (RAG ngữ nghĩa) đã có nhãn hiển thị trong `components/chat-message.tsx` (`TOOL_LABELS`: "Đang tra cứu đánh giá & hồ sơ quán", `TOOL_DONE_LABELS`: "Tri thức quán"). Khi thêm tool mới ở `@/ai/tools`, bắt buộc phải bổ sung nhãn tiếng Việt tương ứng vào cả hai map `TOOL_LABELS` (lúc đang gọi) và `TOOL_DONE_LABELS` (khi hoàn thành).
 - Máy lạnh/ổ cắm là dữ liệu suy luận từ review — giữ dòng cảnh báo dưới ô nhập.
 - Test tay sẽ trừ lượt thật trong bảng `ai_rate_limits` (định danh = hash IP + User-Agent).
 
