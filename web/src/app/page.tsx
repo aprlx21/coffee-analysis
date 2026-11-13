@@ -6,7 +6,7 @@ import { CafeExploreClient, parseCafeFilters } from "@/features/cafes";
 import { getFacets, listCafes, listCanonicalItems } from "@/server/db";
 
 export const metadata: Metadata = {
-  title: "Khám phá quán cafe An Thượng",
+  title: { absolute: "An Thuong Review" },
   description: "Tra cứu hơn 115 quán cafe tại khu phố Tây An Thượng Đà Nẵng với đầy đủ tiện ích và khoảng giá.",
 };
 

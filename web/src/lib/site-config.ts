@@ -3,7 +3,7 @@
  * An toàn để import ở cả Server lẫn Client Component.
  */
 export const siteConfig = {
-  name: "Cafe An Thượng",
+  name: "An Thuong Review",
   description:
     "Bản đồ và cơ sở dữ liệu chi tiết các quán cafe tại khu phố Tây An Thượng, Đà Nẵng. Tìm quán làm việc, wifi mạnh, máy lạnh, và bảng giá thực đơn minh bạch.",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",

@@ -49,12 +49,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {/* Logo */}
           <Link
             href="/"
-            aria-label="Cafe An Thượng - Trang chủ"
+            aria-label="An Thuong Review - Trang chủ"
             className="group flex size-12 items-center justify-center rounded-2xl border border-border/80 bg-card p-1.5 shadow-glass transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glass-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
             <Image
               src="/coffee-brand-icon.png"
-              alt="Cafe An Thượng Logo"
+              alt="An Thuong Review Logo"
               width={36}
               height={36}
               className="size-9 rounded-full object-contain transition-transform duration-200 group-hover:scale-105"
@@ -121,14 +121,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex size-8 items-center justify-center overflow-hidden rounded-xl border border-border/80 bg-card p-0.5 shadow-glass-sm">
             <Image
               src="/coffee-brand-icon.png"
-              alt="Cafe An Thượng Logo"
+              alt="An Thuong Review Logo"
               width={28}
               height={28}
               className="size-7 rounded-full object-contain"
               priority
             />
           </div>
-          <span className="font-heading text-base font-bold tracking-tight text-foreground">Cafe An Thượng</span>
+          <span className="font-heading text-base font-bold tracking-tight text-foreground">An Thuong Review</span>
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle className="size-8" />
@@ -153,13 +153,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <span className="flex size-6 items-center justify-center overflow-hidden rounded-lg border border-border/80 bg-card shadow-glass-sm">
                     <Image
                       src="/coffee-brand-icon.png"
-                      alt="Cafe An Thượng Logo"
+                      alt="An Thuong Review Logo"
                       width={20}
                       height={20}
                       className="size-5 rounded-full object-contain"
                     />
                   </span>
-                  <span className="font-heading text-sm font-bold text-foreground">Cafe An Thượng</span>
+                  <span className="font-heading text-sm font-bold text-foreground">An Thuong Review</span>
                 </div>
                 <p className="max-w-md text-xs text-muted-foreground">
                   Nền tảng tra cứu và phân tích thị trường quán cafe tại khu phố Tây An Thượng (Mỹ An, Ngũ Hành Sơn, Đà
