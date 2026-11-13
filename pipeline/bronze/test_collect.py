@@ -49,6 +49,12 @@ class SourceImageTest(unittest.TestCase):
         provider.assert_called_once()
         self.assertEqual(rows[0]["images"], photos)
 
+    def test_keeps_original_label_alongside_unlabeled_detail_images(self):
+        unlabeled = {"link": "https://images.example/menu.jpg", "width": 1200}
+        labeled = {"link": unlabeled["link"], "about": "Thực đơn"}
+        self.assertEqual(collect.keep_search_image_labels([unlabeled], [labeled, labeled]), [unlabeled, labeled])
+        self.assertEqual(collect.keep_search_image_labels([labeled], [labeled]), [labeled])
+
     def test_does_not_invent_gallery_labels(self):
         photos = [{"link": "https://images.example/gallery.jpg"}]
         search = [{"place_id": "place"}]

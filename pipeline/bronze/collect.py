@@ -192,6 +192,32 @@ def details_ids(row):
     return {value for field in ("data_id", "place_id") if (value := source_id(row, field))}
 
 
+def keep_search_image_labels(detail_images, search_images):
+    if not isinstance(search_images, list):
+        return detail_images
+    if detail_images in (None, []):
+        return search_images or detail_images
+    if not isinstance(detail_images, list):
+        return detail_images
+
+    def labeled_url(photo):
+        if not isinstance(photo, dict):
+            return None
+        link, label = photo.get("link"), photo.get("about")
+        if isinstance(link, str) and link and isinstance(label, str) and label.strip():
+            return link
+        return None
+
+    labels = {labeled_url(photo) for photo in detail_images}
+    merged = list(detail_images)
+    for photo in search_images:
+        link = labeled_url(photo)
+        if link and link not in labels:
+            merged.append(photo)
+            labels.add(link)
+    return merged
+
+
 def collect_details(api_key, search_rows):
     unique = {}
     seen_ids = set()
@@ -225,8 +251,7 @@ def collect_details(api_key, search_rows):
             raise CollectionError("omkar_incomplete_details")
         for lookup, (key, search_row) in by_lookup.items():
             place = search_row | matched[lookup]
-            if place.get("images") in (None, []) and search_row.get("images"):
-                place["images"] = search_row["images"]
+            place["images"] = keep_search_image_labels(place.get("images"), search_row.get("images"))
             image_count = place.get("image_count")
             if place.get("images") in (None, []) and type(image_count) is int and image_count > 0:
                 # The details endpoint can report a gallery while leaving images empty.
