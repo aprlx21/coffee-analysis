@@ -12,6 +12,7 @@ import {
   getMarketInsightsTool,
   getModel,
   searchCafesTool,
+  searchKnowledgeTool,
   systemPrompt,
 } from "@/ai";
 import { AI_DAILY_QUOTA, checkAndConsumeAiQuota, getClientIdentifier } from "@/server/rate-limit/ai-quota";
@@ -115,9 +116,11 @@ export async function POST(req: Request) {
         getCafeMenu: getCafeMenuTool,
         compareItemPrices: compareItemPricesTool,
         getMarketInsights: getMarketInsightsTool,
+        searchKnowledge: searchKnowledgeTool,
       },
       temperature: 0.3,
-      stopWhen: stepCountIs(5),
+      // 6 bước: searchCafes → searchKnowledge → getCafeDetail → getCafeMenu vẫn còn dư 1–2 bước để chốt câu trả lời.
+      stopWhen: stepCountIs(6),
       abortSignal: req.signal,
       onError: ({ error }) => {
         console.error("Lỗi stream AI:", error);

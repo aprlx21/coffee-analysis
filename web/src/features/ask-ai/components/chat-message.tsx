@@ -13,6 +13,7 @@ const TOOL_LABELS: Record<string, string> = {
   getCafeMenu: "Đang đọc thực đơn",
   compareItemPrices: "Đang so sánh giá",
   getMarketInsights: "Đang tra báo cáo thị trường",
+  searchKnowledge: "Đang tra cứu đánh giá & hồ sơ quán",
 };
 
 const TOOL_DONE_LABELS: Record<string, string> = {
@@ -21,6 +22,7 @@ const TOOL_DONE_LABELS: Record<string, string> = {
   getCafeMenu: "Thực đơn",
   compareItemPrices: "Bảng giá",
   getMarketInsights: "Báo cáo thị trường",
+  searchKnowledge: "Tri thức quán",
 };
 
 export function AssistantAvatar() {

@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  serverExternalPackages: ["@lancedb/lancedb"],
+  outputFileTracingIncludes: {
+    "/api/ai/chat": ["./data/lancedb/**/*"],
+  },
   turbopack: {
     rules: {
       "*.css": {
