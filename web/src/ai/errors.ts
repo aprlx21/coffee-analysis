@@ -3,12 +3,12 @@ import "server-only";
 import { APICallError } from "ai";
 
 /**
- * Lỗi do phía provider (quá tải, 429, 5xx, timeout, mạng) — đáng thử model dự phòng và đáng hoàn lượt.
- * Lỗi 4xx khác (400 request sai, 401/403 key sai…) là do request/cấu hình, không phải lỗi tạm thời:
- * không fallback (tránh nhân đôi lượt gọi) và không hoàn lượt (tránh lạm dụng).
+ * Lỗi KHÔNG do nội dung request của người dùng gây ra (quá tải, 429, 5xx, mạng, model bị gỡ/sai tên 404, key 401/403).
+ * Dùng cho cả hai quyết định: thử model dự phòng và hoàn lượt hỏi. Người dùng không thể chủ ý gây ra các lỗi này
+ * nên không có đường lạm dụng. Lỗi do chính request (400/413/422) thì không: model khác cũng sẽ lỗi và có thể bị lạm dụng.
  */
 export function isProviderSideError(err: unknown): boolean {
   if (!APICallError.isInstance(err)) return true;
   const status = err.statusCode;
-  return status === undefined || status === 408 || status === 429 || status >= 500;
+  return status === undefined || ![400, 413, 422].includes(status);
 }

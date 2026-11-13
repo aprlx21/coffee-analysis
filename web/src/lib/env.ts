@@ -14,7 +14,7 @@ const envSchema = z.object({
   AI_PROVIDER: z.string().default("groq"),
   AI_MODEL: z.string().default("qwen/qwen3.8-27b"),
   // Model Gemini dự phòng (dùng GEMINI_API_KEY) khi model chính lỗi/quá tải; đặt rỗng để tắt.
-  AI_FALLBACK_MODEL: z.string().default("gemini-2.5-flash"),
+  AI_FALLBACK_MODEL: z.string().default("gemini-3.5-flash-lite"),
   AI_API_KEY: z.string().min(1).optional(),
   GROQ_API_KEY: z.string().min(1).optional(),
   RATE_LIMIT_SALT: z.string().default("coffee_analysis_salt_2026"),
