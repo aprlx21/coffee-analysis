@@ -60,7 +60,7 @@ export function MapPopup({ cafe }: MapPopupProps) {
 
         {/* Spatial Cluster badge */}
         <div
-          className="absolute top-2 right-2 rounded-md px-2 py-0.5 text-[10px] font-bold text-white shadow-glass-sm"
+          className="absolute top-2 right-10 rounded-md px-2 py-0.5 text-[10px] font-bold text-white shadow-glass-sm"
           style={{ backgroundColor: cluster.color }}
         >
           {cluster.shortLabel}
