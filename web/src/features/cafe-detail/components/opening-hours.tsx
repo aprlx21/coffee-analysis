@@ -1,3 +1,6 @@
+"use client";
+
+import * as React from "react";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -10,9 +13,24 @@ interface OpeningHoursProps {
   className?: string;
 }
 
+const emptySubscribe = () => () => {};
+
+function useIsClient() {
+  return React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+}
+
 export function OpeningHours({ hours, className }: OpeningHoursProps) {
-  const status = checkCafeOpenStatus(hours);
-  const schedules = parseHoursData(hours);
+  const isClient = useIsClient();
+
+  const schedules = React.useMemo(() => parseHoursData(hours), [hours]);
+  const status = React.useMemo(() => {
+    if (!isClient) return null;
+    return checkCafeOpenStatus(hours);
+  }, [isClient, hours]);
 
   return (
     <div data-slot="opening-hours-card" className={cn("rounded-xl glass p-4 shadow-glass-card sm:p-6", className)}>
@@ -23,7 +41,15 @@ export function OpeningHours({ hours, className }: OpeningHoursProps) {
         </div>
 
         <div>
-          {status.isOpen === true ? (
+          {status === null ? (
+            <Badge
+              variant="muted"
+              className="border border-border bg-muted px-2.5 py-1 text-xs font-bold text-muted-foreground"
+            >
+              <Clock className="size-3.5 stroke-[2.5]" />
+              <span>Đang kiểm tra...</span>
+            </Badge>
+          ) : status.isOpen === true ? (
             <Badge
               variant="default"
               className="gap-1.5 border border-border bg-primary px-3 py-1 text-xs font-bold text-primary-foreground shadow-glass-sm"
@@ -54,7 +80,7 @@ export function OpeningHours({ hours, className }: OpeningHoursProps) {
         {schedules.length > 0 ? (
           <div className="grid gap-2 sm:grid-cols-1">
             {schedules.map((schedule) => {
-              const isToday = status.isToday(schedule.day);
+              const isToday = status ? status.isToday(schedule.day) : false;
               const vnDay = VIETNAMESE_DAYS[schedule.day] ?? schedule.day;
               const timesText = schedule.times.join(", ");
 
