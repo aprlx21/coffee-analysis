@@ -21,6 +21,7 @@ Bronze](bronze/README.md) và [schema](db/migrations/001_bronze.sql) cho hai b�
 Postgres và giữ nguyên các tuần đã thu thập. Các mục bên dưới mô tả pipeline
 OCR và cơ sở vật chất hiện có.
 
+
 ### 2.1. Bronze Layer (Raw)
 ```sql
 CREATE TABLE IF NOT EXISTS raw_gmaps_scrapes (

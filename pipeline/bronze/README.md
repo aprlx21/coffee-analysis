@@ -2,14 +2,14 @@
 
 GitHub Actions calls the hosted Omkar Cloud Google Maps Scraper every Friday at **09:00 in Da Nang** (02:00 UTC). The workflow searches for `cafe in an thuong da nang`, the exact query recorded in the 115-row example CSV. Weekly mode requests up to 120 results. It fetches details in batches of up to 20 to collect the fields missing from search, including featured reviews and reviews by rating. [Search Businesses](https://www.omkar.cloud/tools/google-maps-scraper) · [Business Details](https://www.omkar.cloud/tools/google-maps-scraper/business-details)
 
-Supabase Postgres stores the run history and all snapshot rows. The collector keeps responses in memory until it publishes. GitHub Actions logs run IDs, counts, field names with no data, and sanitized error codes.
+Supabase Postgres stores the run history and all snapshot rows. The collector keeps responses in memory until it publishes. GitHub Actions logs run IDs, counts, field names with no data, image label coverage, and sanitized error codes. The weekly workflow passes the ID of the committed snapshot to Silver. A retry passes the original snapshot ID when that week's collection has already succeeded.
 
 ## Set up Supabase
 
-1. Open [Create a Supabase project](https://supabase.com/dashboard/new) and sign in. Select or create an organization, enter a project name such as `coffee-bronze`, create a strong database password, choose a region, and click **Create new project**. Keep the database password in your password manager. The workflow uses a server-side API key.
-2. Open the project's **SQL Editor** → **New query**. Paste the full contents of [pipeline/db/migrations/001_bronze.sql](../db/migrations/001_bronze.sql) and click **Run**. The script creates `public.collection_runs`, `public.cafe_snapshots`, and two write functions. You can verify the tables in **Table Editor**. The **Data API** must be enabled with `public` in its exposed schemas. New projects normally have this configured. Check **Integrations → Data API** if needed. [Supabase database functions](https://supabase.com/docs/guides/database/functions) · [Data API](https://supabase.com/docs/guides/api)
+1. Open the Bronze Supabase project configured in the `SUPABASE_URL` GitHub Actions secret. Silver writes to the existing menu database using `SILVER_DATABASE_URL`.
+2. Open the Bronze project's **SQL Editor** → **New query**. Run [pipeline/db/migrations/001_bronze.sql](../db/migrations/001_bronze.sql) if the Bronze tables are absent, then run [the Bronze handoff migration](../db/migrations/002_bronze_published_run.sql) and [the Silver export migration](../db/migrations/003_bronze_silver_export.sql). These scripts set up `public.collection_runs`, `public.cafe_snapshots`, and the functions used to publish, identify, or read a committed snapshot. You can verify the tables in **Table Editor**. The **Data API** must expose `public`. Check **Integrations → Data API** if needed. [Supabase database functions](https://supabase.com/docs/guides/database/functions) · [Data API](https://supabase.com/docs/guides/api)
 3. Copy the **Project URL** from the **Connect** dialog or **Integrations → Data API**. Use the base URL in the form `https://<project-ref>.supabase.co`.
-4. Open **Settings → API Keys → Publishable and secret API keys**. In **Secret keys**, create a dedicated key named `coffee-bronze-actions` and copy its `sb_secret_…` value. If the project displays **Create new API keys**, click that first. Keep the secret key in GitHub Actions Secrets. The SQL restricts the Bronze tables and allows the server role to run the two write functions. The secret key has elevated permissions across the project. [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys)
+4. If the project needs a new key, open **Settings → API Keys → Publishable and secret API keys**. In **Secret keys**, create a dedicated key named `coffee-bronze-actions` and copy its `sb_secret_…` value. Keep the secret key in GitHub Actions Secrets. The SQL restricts the Bronze tables and allows the server role to run the collection, handoff, and export functions. The secret key has elevated permissions across the project. [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys)
 
 ## Set up GitHub Actions
 
@@ -21,13 +21,14 @@ Supabase Postgres stores the run history and all snapshot rows. The collector ke
    | `OMKAR_API_KEY` | The Omkar Cloud API key |
    | `SUPABASE_URL` | The Supabase Project URL from step 3 |
    | `SUPABASE_SECRET_KEY` | The Supabase `sb_secret_…` key from step 4 |
+   | `SILVER_DATABASE_URL` | A PostgreSQL connection string for the Silver destination |
 
    Enter each value directly in GitHub. [GitHub Actions Secrets](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
 3. Merge the pipeline files and [workflow](../../.github/workflows/weekly-bronze.yml) into the repository's default branch, currently `main`. GitHub reads the weekly schedule and enables manual runs from that branch. [GitHub scheduling and manual runs](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
 
 ## Test and verify
 
-1. In [GitHub Actions](https://github.com/hngnho/coffee-analysis/actions), open **Weekly Bronze collection** → **Run workflow**, select `main` and **smoke**, and click **Run workflow**. Smoke mode requests up to three places and writes a run marked `smoke`. The successful job prints the Supabase run ID and stored row count.
+1. In [GitHub Actions](https://github.com/hngnho/coffee-analysis/actions), open **Weekly Bronze collection** → **Run workflow**, select `main` and **smoke**, and click **Run workflow**. Smoke mode requests up to three places and writes a run marked `smoke`. The successful job prints the Supabase run ID and stored row count. Only weekly mode automatically calls Silver.
 2. In the Supabase SQL Editor, run these queries. Match the run ID to the GitHub log. A successful smoke run should show one to three rows, and the counts in both tables should agree.
 
    ```sql
@@ -45,9 +46,9 @@ Supabase Postgres stores the run history and all snapshot rows. The collector ke
    limit 10;
    ```
 
-   Open `cafe_snapshots` in **Table Editor**, filter to the smoke run ID, and check the nested values, especially `images` and `featured_reviews`. Omkar may return nulls or empty arrays for individual fields. The hosted details example itself shows an empty `images` array. If details leave `images` empty or missing but report a positive image count, the collector requests the first page of up to 15 gallery photos. It stores the returned photo objects in `images`. Those objects include fields such as `photo_id`, `link`, and dimensions. The desktop CSV includes photo labels such as `about`, which the hosted gallery does not provide. [Omkar Business Details](https://www.omkar.cloud/tools/google-maps-scraper/business-details) · [Omkar Business Photos](https://www.omkar.cloud/tools/google-maps-scraper/business-photos)
+   Open `cafe_snapshots` in **Table Editor**, filter to the smoke run ID, and check the nested values, especially `images` and `featured_reviews`. If details return no images, the collector retains any search images or fetches the first page of up to 15 gallery photos when a positive image count is reported. Bronze keeps image objects as supplied, including any `about` label. The hosted details example shows empty `images` and `menu_photos` arrays, and the hosted gallery example supplies photo IDs and dimensions without `about` labels. Silver OCR selects only menu-labeled entries in `images`. A weekly snapshot with zero such entries produces no new OCR candidates. [Omkar Business Details](https://www.omkar.cloud/tools/google-maps-scraper/business-details) · [Omkar Business Photos](https://www.omkar.cloud/tools/google-maps-scraper/business-photos)
 3. Open the **same** GitHub run and choose **Re-run all jobs**. A new attempt should report `skipped` with zero snapshot rows. A new **Run workflow** dispatch creates a new smoke test.
-4. To collect the current week's full snapshot immediately, dispatch **weekly**. A second weekly run for that Vietnam week should report `skipped`. Future weeks append their own observations. [Manually running a GitHub workflow](https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow)
+4. To collect the current week's full snapshot immediately, dispatch **weekly**. A second weekly run for that Vietnam week should report `skipped` and pass the original committed run ID to Silver. Future weeks append their own observations. [Manually running a GitHub workflow](https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow)
 
 ## Fields and identity
 

@@ -225,6 +225,8 @@ def collect_details(api_key, search_rows):
             raise CollectionError("omkar_incomplete_details")
         for lookup, (key, search_row) in by_lookup.items():
             place = search_row | matched[lookup]
+            if place.get("images") in (None, []) and search_row.get("images"):
+                place["images"] = search_row["images"]
             image_count = place.get("image_count")
             if place.get("images") in (None, []) and type(image_count) is int and image_count > 0:
                 # The details endpoint can report a gallery while leaving images empty.
@@ -271,10 +273,23 @@ def github_run(mode):
 def supabase_rpc(url, key, function, payload):
     result = request_json("supabase", f"{url}/rest/v1/rpc/{function}", {"apikey": key}, payload)
     if (not isinstance(result, dict) or type(result.get("run_id")) is not int
+            or result["run_id"] <= 0
             or result.get("status") not in ("running", "succeeded", "failed", "skipped")
             or type(result.get("row_count")) is not int):
         raise CollectionError("supabase_invalid_rpc_response")
     return result
+
+
+def emit_published_run(url, key, result):
+    output_path = os.getenv("GITHUB_OUTPUT")
+    if not output_path:
+        return
+    if result["status"] == "skipped":
+        result = supabase_rpc(url, key, "published_bronze_run", {"p_run_id": result["run_id"]})
+    if result["status"] != "succeeded" or result["row_count"] <= 0:
+        raise CollectionError("supabase_missing_published_snapshot")
+    with open(output_path, "a", encoding="utf-8") as output:
+        output.write(f"bronze_run_id={result['run_id']}\n")
 
 
 def run(mode):
@@ -288,7 +303,11 @@ def run(mode):
     run_id = attempt["run_id"]
     if attempt["status"] != "running":
         print(f"Supabase Bronze run {run_id} is {attempt['status']}.", flush=True)
-        return int(attempt["status"] == "failed")
+        if attempt["status"] == "failed":
+            return 1
+        if mode == "weekly":
+            emit_published_run(url, key, attempt)
+        return 0
 
     print(f"Supabase Bronze run {run_id} started for {metadata['p_week_start']} ({mode}).", flush=True)
     finish = {
@@ -329,6 +348,12 @@ def run(mode):
         missing = [column for column in SOURCE_FIELDS if all(row[column] in (None, [], {}) for row in records)]
         if missing:
             print("Fields with no values in this run: " + ", ".join(missing), flush=True)
+        photos = [photo for row in records for photo in row["images"] or []]
+        labeled = sum(isinstance(photo, dict) and isinstance(photo.get("about"), str)
+                      and bool(photo["about"].strip()) for photo in photos)
+        print(f"Images with a source label: {labeled}/{len(photos)}.", flush=True)
+    if mode == "weekly":
+        emit_published_run(url, key, result)
     return 0
 
 
