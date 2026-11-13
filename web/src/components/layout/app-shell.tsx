@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -45,13 +46,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         className="fixed inset-y-0 left-0 z-40 hidden w-[72px] flex-col items-center justify-between glass-strong py-5 md:flex"
       >
         <div className="flex flex-col items-center gap-6">
-          {/* Logo ☕ */}
+          {/* Logo */}
           <Link
             href="/"
             aria-label="Cafe An Thượng - Trang chủ"
-            className="group flex size-12 items-center justify-center rounded-2xl border border-transparent bg-primary text-2xl font-bold text-primary-foreground shadow-glass transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glass-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            className="group flex size-12 items-center justify-center rounded-2xl border border-border/80 bg-card p-1.5 shadow-glass transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glass-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
-            ☕
+            <Image
+              src="/coffee-brand-icon.png"
+              alt="Cafe An Thượng Logo"
+              width={36}
+              height={36}
+              className="size-9 rounded-full object-contain transition-transform duration-200 group-hover:scale-105"
+              priority
+            />
           </Link>
 
           {/* Navigation Items */}
@@ -110,8 +118,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ======================================================== */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between glass-strong px-4 md:hidden">
         <Link href="/" className="flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <div className="flex size-8 items-center justify-center rounded-xl bg-primary text-base font-bold text-primary-foreground shadow-glass-sm">
-            ☕
+          <div className="flex size-8 items-center justify-center overflow-hidden rounded-xl border border-border/80 bg-card p-0.5 shadow-glass-sm">
+            <Image
+              src="/coffee-brand-icon.png"
+              alt="Cafe An Thượng Logo"
+              width={28}
+              height={28}
+              className="size-7 rounded-full object-contain"
+              priority
+            />
           </div>
           <span className="font-heading text-base font-bold tracking-tight text-foreground">Cafe An Thượng</span>
         </Link>
@@ -135,8 +150,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="flex size-6 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground shadow-glass-sm">
-                    ☕
+                  <span className="flex size-6 items-center justify-center overflow-hidden rounded-lg border border-border/80 bg-card shadow-glass-sm">
+                    <Image
+                      src="/coffee-brand-icon.png"
+                      alt="Cafe An Thượng Logo"
+                      width={20}
+                      height={20}
+                      className="size-5 rounded-full object-contain"
+                    />
                   </span>
                   <span className="font-heading text-sm font-bold text-foreground">Cafe An Thượng</span>
                 </div>
