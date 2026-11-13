@@ -1,13 +1,13 @@
 -- =====================================================================
 -- 002_ai_rate_limits.sql (issue #12)
--- Bảng và hàm rate limit giới hạn lượt hỏi AI (mặc định 3 lượt / 24h).
+-- Bảng và hàm rate limit giới hạn lượt hỏi AI (mặc định 5 lượt / 24h).
 -- Idempotent, an toàn khi chạy lại nhiều lần.
 -- =====================================================================
 
 CREATE TABLE IF NOT EXISTS ai_rate_limits (
     identifier TEXT PRIMARY KEY,
     questions_used INT NOT NULL DEFAULT 0,
-    max_questions INT NOT NULL DEFAULT 3,
+    max_questions INT NOT NULL DEFAULT 5,
     first_asked_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     last_asked_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     reset_at TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '24 HOURS')
@@ -18,7 +18,7 @@ CREATE INDEX IF NOT EXISTS idx_ai_rate_limits_reset_at ON ai_rate_limits(reset_a
 -- Hàm nguyên tử (Atomic) kiểm tra và trừ quota
 CREATE OR REPLACE FUNCTION check_and_consume_ai_quota(
     p_identifier TEXT,
-    p_max_limit INT DEFAULT 3
+    p_max_limit INT DEFAULT 5
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -77,7 +77,7 @@ $$;
 -- Hàm chỉ đọc quota hiện tại (không tăng lượt)
 CREATE OR REPLACE FUNCTION get_ai_quota_status(
     p_identifier TEXT,
-    p_max_limit INT DEFAULT 3
+    p_max_limit INT DEFAULT 5
 )
 RETURNS JSONB
 LANGUAGE plpgsql

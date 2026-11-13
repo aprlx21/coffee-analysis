@@ -135,3 +135,40 @@ export interface AnalyticsData {
   benchmarkMenu: BenchmarkDrinkItem[];
   amenities: AmenityStat[];
 }
+
+export interface PricingTrainingShop {
+  placeId: string;
+  name: string;
+  lat: number;
+  lng: number;
+  priceK: number;
+  hasCardPayment: boolean;
+  hasWork: boolean;
+}
+
+export interface PricingDrinkData {
+  canonicalId: string;
+  displayName: string;
+  model: import("@/features/pricing/lib/regression").FittedModel | null;
+  shops: PricingTrainingShop[];
+}
+
+export interface PricingAllShop {
+  placeId: string;
+  name: string;
+  lat: number;
+  lng: number;
+}
+
+export interface PricingBounds {
+  minLat: number;
+  maxLat: number;
+  minLng: number;
+  maxLng: number;
+}
+
+export interface PricingData {
+  drinks: PricingDrinkData[];
+  allShops: PricingAllShop[];
+  bounds: PricingBounds;
+}

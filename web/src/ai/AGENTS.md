@@ -22,6 +22,7 @@ ai/
     ├── get-cafe-detail.ts     # Xem chi tiết giờ giấc, liên hệ, đánh giá nổi bật
     ├── get-cafe-menu.ts       # Xem danh mục đồ uống bóc tách OCR
     ├── compare-item-prices.ts # So sánh giá món chuẩn hoá giữa các quán (v_typical_price_v2)
+    ├── suggest-drink-price.ts # Gợi ý định giá đồ uống OLS từ địa chỉ/mặt bằng mở quán (@/server/pricing)
     ├── get-market-insights.ts # Trích mục liên quan (theo topic) từ features/analytics/data/market-insights.md
     └── search-knowledge.ts    # RAG ngữ nghĩa: tìm review, hồ sơ, món thô, báo cáo thị trường (LanceDB)
 ```
@@ -36,7 +37,7 @@ Dữ liệu & script liên quan (ngoài thư mục `src/ai/`):
 UI (features/ask-ai/components, "use client")
   → Route Handler app/api/ai/chat/route.ts
       → Validate body bằng zod (chỉ nhận text, tối đa 8 tin gần nhất) — TRƯỚC khi trừ lượt
-      → Kiểm tra Rate Limit AI_DAILY_QUOTA = 3 câu/24h (checkAndConsumeAiQuota)
+      → Rate Limit: bản MVP TẮT (AI_QUOTA_ENABLED = false); khi bật: AI_DAILY_QUOTA = 5 câu/24h (checkAndConsumeAiQuota)
       → streamText() với model Groq + tools tra cứu cấu trúc & searchKnowledge (RAG ngữ nghĩa)
           → searchKnowledge: embed truy vấn (gemini-embedding-001, 768d, RETRIEVAL_QUERY) → tìm k vector gần nhất (LanceDB cosine)
           → Lỗi mềm: nếu thiếu GEMINI_API_KEY hoặc chưa build index, searchKnowledge trả thông điệp lỗi mềm thân thiện, AI tự động dùng các tool cấu trúc khác mà không ngắt stream
@@ -131,7 +132,7 @@ Khai báo trong `.env.local`:
 - **Phân định trách nhiệm dữ liệu**: Giá, rating và các tiện ích cốt lõi (wifi, máy lạnh, ổ cắm...) **LUÔN** lấy từ các tool cấu trúc (`searchCafes`, `getCafeDetail`, `getCafeMenu`, `compareItemPrices`). **KHÔNG** lấy giá, rating hay tiện ích từ kết quả `searchKnowledge` — RAG chỉ dùng để trích dẫn review, nắm bắt phong cách/vibe và thực đơn ngoài danh mục chuẩn.
 - **Bắt buộc trích dẫn nguồn**: Khi trả lời từ tri thức của `searchKnowledge`, phải nêu rõ nguồn: "theo đánh giá của khách", "theo hồ sơ quán", "theo thực đơn", hoặc "theo báo cáo thị trường".
 - **Link nội bộ**: Tên quán nhắc tới phải link tới trang chi tiết dạng `**[Tên quán](/quan/<placeId>)**` (sử dụng trường `url` trả về từ tool).
-- **System prompt version**: System prompt hiện tại có id `an-thuong-coffee-expert-v4`. Sửa prompt thì phải tăng version.
+- **System prompt version**: System prompt hiện tại có id `an-thuong-coffee-expert-v5`. Sửa prompt thì phải tăng version.
 - **Cảnh báo giá bất thường**: Các món có cờ `isSuspicious` hoặc giá lệch sâu không được khẳng định chắc chắn; bắt buộc kèm ghi chú cảnh báo (ví dụ giá mang đi, vỉa hè hoặc sai sót bóc tách OCR).
 - **Tối ưu token**: Kết quả tool trả về càng gọn càng tốt; `getMarketInsights` chỉ trả các mục `## N.` khớp chủ đề.
 - `market-insights.md` được đọc bằng `fs` lúc chạy; trang `/insights` cũng render chính file này.

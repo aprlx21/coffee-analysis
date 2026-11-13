@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
-import { BarChart3, Compass, Database, Lightbulb, Map, Sparkles } from "lucide-react";
+import { BarChart3, Calculator, Compass, Database, Lightbulb, Map, Sparkles } from "lucide-react";
 
 import { ThemeSegmented, ThemeToggle } from "@/components/theme-toggle";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -19,6 +19,7 @@ export interface NavItem {
 export const APP_NAV_ITEMS: NavItem[] = [
   { label: "Khám phá", href: "/", icon: Compass },
   { label: "Bản đồ", href: "/ban-do", icon: Map },
+  { label: "Định giá", href: "/dinh-gia", icon: Calculator },
   { label: "Hỏi AI", href: "/hoi-ai", icon: Sparkles },
   { label: "Phân tích", href: "/phan-tich", icon: BarChart3 },
   { label: "Insights", href: "/insights", icon: Lightbulb },
@@ -189,6 +190,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <li>
                     <Link href="/phan-tich" className="transition-colors hover:text-primary">
                       Thị trường & Giá cả
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/dinh-gia" className="transition-colors hover:text-primary">
+                      Định giá mặt bằng
                     </Link>
                   </li>
                   <li>

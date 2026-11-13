@@ -14,6 +14,7 @@ const TOOL_LABELS: Record<string, string> = {
   compareItemPrices: "Đang so sánh giá",
   getMarketInsights: "Đang tra báo cáo thị trường",
   searchKnowledge: "Đang tra cứu đánh giá & hồ sơ quán",
+  suggestDrinkPrice: "Đang định giá đồ uống",
 };
 
 const TOOL_DONE_LABELS: Record<string, string> = {
@@ -23,6 +24,7 @@ const TOOL_DONE_LABELS: Record<string, string> = {
   compareItemPrices: "Bảng giá",
   getMarketInsights: "Báo cáo thị trường",
   searchKnowledge: "Tri thức quán",
+  suggestDrinkPrice: "Gợi ý giá",
 };
 
 export function AssistantAvatar() {

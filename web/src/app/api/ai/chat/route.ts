@@ -14,10 +14,12 @@ import {
   isProviderSideError,
   searchCafesTool,
   searchKnowledgeTool,
+  suggestDrinkPriceTool,
   systemPrompt,
 } from "@/ai";
 import {
   AI_DAILY_QUOTA,
+  AI_QUOTA_ENABLED,
   checkAndConsumeAiQuota,
   getClientIdentifier,
   refundAiQuota,
@@ -88,10 +90,11 @@ export async function POST(req: Request) {
   }
 
   // 2. Kiểm tra và trừ lượt hỏi
-  const identifier = await getClientIdentifier();
-  const quota = await checkAndConsumeAiQuota(identifier, AI_DAILY_QUOTA);
+  // Bản MVP tắt giới hạn (AI_QUOTA_ENABLED = false) → bỏ qua toàn bộ bước trừ/hoàn lượt.
+  const identifier = AI_QUOTA_ENABLED ? await getClientIdentifier() : null;
+  const quota = identifier ? await checkAndConsumeAiQuota(identifier, AI_DAILY_QUOTA) : null;
 
-  if (!quota.allowed) {
+  if (quota && !quota.allowed) {
     return Response.json(
       {
         error: "QUOTA_EXCEEDED",
@@ -115,7 +118,7 @@ export async function POST(req: Request) {
   let hasOutput = false;
   let refunded = false;
   const refundOnce = async () => {
-    if (refunded || hasOutput || req.signal.aborted) return;
+    if (!identifier || refunded || hasOutput || req.signal.aborted) return;
     refunded = true;
     await refundAiQuota(identifier);
   };
@@ -132,6 +135,7 @@ export async function POST(req: Request) {
         compareItemPrices: compareItemPricesTool,
         getMarketInsights: getMarketInsightsTool,
         searchKnowledge: searchKnowledgeTool,
+        suggestDrinkPrice: suggestDrinkPriceTool,
       },
       temperature: 0.3,
       // 6 bước: searchCafes → searchKnowledge → getCafeDetail → getCafeMenu vẫn còn dư 1–2 bước để chốt câu trả lời.
@@ -147,10 +151,12 @@ export async function POST(req: Request) {
     });
 
     return result.toUIMessageStreamResponse({
-      headers: {
-        "X-AI-Remaining-Quota": String(quota.remaining),
-        "X-AI-Quota-Max": String(quota.max),
-      },
+      headers: quota
+        ? {
+            "X-AI-Remaining-Quota": String(quota.remaining),
+            "X-AI-Quota-Max": String(quota.max),
+          }
+        : undefined,
       // Mặc định SDK che lỗi thành chuỗi rỗng; trả thông điệp thân thiện để UI hiển thị.
       onError: () => STREAM_ERROR_MESSAGE,
     });
