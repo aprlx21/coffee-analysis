@@ -11,6 +11,9 @@ const apiKey = env.GROQ_API_KEY || env.AI_API_KEY;
 export const aiConfig = {
   provider: env.AI_PROVIDER,
   model: env.AI_MODEL,
+  /** Model Gemini dự phòng; chỉ bật khi có GEMINI_API_KEY và AI_FALLBACK_MODEL không rỗng. */
+  fallbackModel: env.GEMINI_API_KEY ? env.AI_FALLBACK_MODEL : "",
+  geminiApiKey: env.GEMINI_API_KEY,
   apiKey,
   enabled: Boolean(env.AI_PROVIDER && env.AI_MODEL && apiKey),
 } as const;

@@ -11,11 +11,17 @@ import {
   getCafeMenuTool,
   getMarketInsightsTool,
   getModel,
+  isProviderSideError,
   searchCafesTool,
   searchKnowledgeTool,
   systemPrompt,
 } from "@/ai";
-import { AI_DAILY_QUOTA, checkAndConsumeAiQuota, getClientIdentifier } from "@/server/rate-limit/ai-quota";
+import {
+  AI_DAILY_QUOTA,
+  checkAndConsumeAiQuota,
+  getClientIdentifier,
+  refundAiQuota,
+} from "@/server/rate-limit/ai-quota";
 
 /** Groq + tối đa 5 bước tool-calling có thể vượt 10s mặc định của serverless. */
 export const maxDuration = 60;
@@ -105,6 +111,15 @@ export async function POST(req: Request) {
     parts: message.parts,
   }));
 
+  // Lỗi phía provider (429/5xx/mạng) khi chưa có câu trả lời → hoàn lượt đúng 1 lần. Người dùng tự dừng thì không hoàn.
+  let hasOutput = false;
+  let refunded = false;
+  const refundOnce = async () => {
+    if (refunded || hasOutput || req.signal.aborted) return;
+    refunded = true;
+    await refundAiQuota(identifier);
+  };
+
   try {
     const result = streamText({
       model: getModel(),
@@ -122,8 +137,12 @@ export async function POST(req: Request) {
       // 6 bước: searchCafes → searchKnowledge → getCafeDetail → getCafeMenu vẫn còn dư 1–2 bước để chốt câu trả lời.
       stopWhen: stepCountIs(6),
       abortSignal: req.signal,
-      onError: ({ error }) => {
+      onChunk: ({ chunk }) => {
+        if (chunk.type === "text-delta") hasOutput = true;
+      },
+      onError: async ({ error }) => {
         console.error("Lỗi stream AI:", error);
+        if (isProviderSideError(error)) await refundOnce();
       },
     });
 
@@ -137,6 +156,7 @@ export async function POST(req: Request) {
     });
   } catch (err: unknown) {
     console.error("Lỗi khi khởi tạo luồng AI streaming:", err);
+    if (isProviderSideError(err)) await refundOnce();
     return Response.json({ error: "AI_ERROR", message: STREAM_ERROR_MESSAGE }, { status: 500 });
   }
 }
