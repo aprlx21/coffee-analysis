@@ -4,8 +4,8 @@ The [weekly Bronze workflow](../bronze/README.md) passes a completed collection 
 
 ## Set up
 
-1. On the Bronze project, apply [001](../db/migrations/001_bronze.sql) if the Bronze tables are absent, then apply [002](../db/migrations/002_bronze_published_run.sql) and [003](../db/migrations/003_bronze_silver_export.sql). On the existing menu database, apply [004](../db/migrations/004_silver.sql).
-2. Set `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SILVER_DATABASE_URL` in [GitHub Actions secrets](https://github.com/hngnho/coffee-analysis/settings/secrets/actions). The first two point to the Bronze Data API. The third is a PostgreSQL connection string for the existing menu database. Use the Supabase **Session pooler** connection if the runner needs IPv4. [Supabase connection methods](https://supabase.com/docs/guides/database/connecting-to-postgres)
+1. On the Bronze project, apply [001](../db/migrations/001_bronze.sql) if the Bronze tables are absent, then apply [002](../db/migrations/002_bronze_published_run.sql) and [003](../db/migrations/003_bronze_silver_export.sql). On the existing menu database, apply [004](../db/migrations/004_silver.sql) and apply [005](../db/migrations/005_silver_runner_access.sql) once to provision the restricted `coffee_silver_runner` role. Enable login with a generated password through your private admin connection. Keep the password outside migration files.
+2. Set `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `SILVER_DATABASE_URL` in [GitHub Actions secrets](https://github.com/hngnho/coffee-analysis/settings/secrets/actions). The first two point to the Bronze Data API. The third connects as `coffee_silver_runner` to the existing menu database. Use the Supabase **Session pooler** connection with `coffee_silver_runner.<project-ref>` as the username if the runner needs IPv4. [Supabase connection methods](https://supabase.com/docs/guides/database/connecting-to-postgres)
 3. Enable Actions on the GitHub repository. The schedule and manual dispatch are available from the default branch once the workflow is merged.
 
 ## Run one snapshot manually
