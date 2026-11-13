@@ -74,6 +74,21 @@ export async function checkAndConsumeAiQuota(
 }
 
 /**
+ * Hoàn lại 1 lượt khi AI lỗi trước khi trả lời được. Không bao giờ throw — hoàn lượt là best-effort.
+ */
+export async function refundAiQuota(identifier: string): Promise<void> {
+  try {
+    const sql = getSql();
+    await sql`SELECT refund_ai_quota(${identifier})`;
+    return;
+  } catch (err) {
+    console.warn("DB refund unavailable, using in-memory fallback:", err);
+  }
+  const current = inMemoryQuota.get(identifier);
+  if (current && current.used > 0) current.used -= 1;
+}
+
+/**
  * Lấy trạng thái quota hiện tại của client mà không làm tăng lượt hỏi.
  */
 export async function getAiQuotaStatus(identifier: string, maxLimit: number = AI_DAILY_QUOTA): Promise<QuotaResult> {

@@ -130,9 +130,8 @@ export function useAskAi() {
   const [quota, setQuota] = React.useState<AiQuota | null>(null);
   const abortRef = React.useRef<AbortController | null>(null);
 
-  React.useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/ai/quota", { signal: controller.signal, cache: "no-store" })
+  const refreshQuota = React.useCallback((signal?: AbortSignal) => {
+    return fetch("/api/ai/quota", { signal, cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: unknown) => {
         const parsed = parseQuota(data);
@@ -141,11 +140,16 @@ export function useAskAi() {
       .catch(() => {
         /* không chặn UI nếu không lấy được quota */
       });
+  }, []);
+
+  React.useEffect(() => {
+    const controller = new AbortController();
+    void refreshQuota(controller.signal);
     return () => {
       controller.abort();
       abortRef.current?.abort();
     };
-  }, []);
+  }, [refreshQuota]);
 
   const patchMessage = React.useCallback((id: string, patch: (message: ChatMessage) => ChatMessage) => {
     updateChatStore((current) => current.map((message) => (message.id === id ? patch(message) : message)));
@@ -289,9 +293,12 @@ export function useAskAi() {
       } finally {
         abortRef.current = null;
         setStatus("idle");
+        // Lượt lỗi được server hoàn lại → đồng bộ số lượt còn lại.
+        const last = getChatSnapshot().find((message) => message.id === assistantId);
+        if (last?.error) void refreshQuota();
       }
     },
-    [patchMessage],
+    [patchMessage, refreshQuota],
   );
 
   const stop = React.useCallback(() => {
