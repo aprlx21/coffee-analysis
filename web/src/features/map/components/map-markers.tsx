@@ -258,7 +258,10 @@ export function MapMarkers({
             {/* Tooltip hover ở chế độ rời rạc - Đảm bảo màu chữ luôn tương phản cao trên cả nền vệ tinh & đường phố */}
             <Tooltip direction="top" offset={[0, -10]} className="glass-marker-hover-tooltip">
               <div className="flex items-center gap-1.5 font-sans text-xs">
-                <span className="size-2.5 shrink-0 rounded-full ring-1 ring-white/60" style={{ backgroundColor: visual.color }} />
+                <span
+                  className="size-2.5 shrink-0 rounded-full ring-1 ring-white/60"
+                  style={{ backgroundColor: visual.color }}
+                />
                 <span className="font-bold text-white drop-shadow-sm">{cafe.name}</span>
                 <span className="text-zinc-400">•</span>
                 <span className="font-semibold text-amber-300 drop-shadow-sm">{cluster.shortLabel}</span>

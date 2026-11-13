@@ -10,3 +10,4 @@ export * from "./tools/get-cafe-menu";
 export * from "./tools/compare-item-prices";
 export * from "./tools/get-market-insights";
 export * from "./tools/search-knowledge";
+export * from "./tools/suggest-drink-price";

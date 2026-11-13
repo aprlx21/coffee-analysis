@@ -6,8 +6,14 @@ import { headers } from "next/headers";
 import { env } from "@/lib/env";
 import { getSql } from "@/server/db/client";
 
-/** Số lượt hỏi AI miễn phí mỗi client trong 24h (issue #12). */
-export const AI_DAILY_QUOTA = 3;
+/**
+ * Bật/tắt giới hạn lượt hỏi AI. Bản MVP: TẮT (hỏi không giới hạn).
+ * Đặt lại `true` để áp dụng `AI_DAILY_QUOTA` — toàn bộ logic trừ/hoàn lượt vẫn giữ nguyên.
+ */
+export const AI_QUOTA_ENABLED: boolean = false;
+
+/** Số lượt hỏi AI miễn phí mỗi client trong 24h khi `AI_QUOTA_ENABLED` bật (issue #12). */
+export const AI_DAILY_QUOTA = 5;
 
 export interface QuotaResult {
   allowed: boolean;

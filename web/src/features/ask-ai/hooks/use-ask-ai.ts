@@ -128,12 +128,18 @@ export function useAskAi() {
   const messages = React.useSyncExternalStore(subscribeChat, getChatSnapshot, getServerChatSnapshot);
   const [status, setStatus] = React.useState<ChatStatus>("idle");
   const [quota, setQuota] = React.useState<AiQuota | null>(null);
+  // Server tắt giới hạn lượt hỏi (bản MVP) → UI ẩn bộ đếm.
+  const [unlimited, setUnlimited] = React.useState(false);
   const abortRef = React.useRef<AbortController | null>(null);
 
   const refreshQuota = React.useCallback((signal?: AbortSignal) => {
     return fetch("/api/ai/quota", { signal, cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: unknown) => {
+        if (data && typeof data === "object" && (data as { unlimited?: unknown }).unlimited === true) {
+          setUnlimited(true);
+          return;
+        }
         const parsed = parseQuota(data);
         if (parsed) setQuota(parsed);
       })
@@ -211,7 +217,7 @@ export function useAskAi() {
           const maxHeader = Number(response.headers.get("X-AI-Quota-Max"));
           setQuota((current) => ({
             remaining: Number(remainingHeader),
-            max: maxHeader || current?.max || 3,
+            max: maxHeader || current?.max || 5,
             resetAt: current?.resetAt ?? null,
           }));
         }
@@ -310,5 +316,5 @@ export function useAskAi() {
     updateChatStore(() => []);
   }, []);
 
-  return { messages, status, quota, send, stop, reset };
+  return { messages, status, quota, unlimited, send, stop, reset };
 }

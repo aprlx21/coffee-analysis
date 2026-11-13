@@ -26,7 +26,9 @@ export interface CafeSnapshotRow extends CafeCard {
 export interface ItemPriceRow {
   placeId: string;
   canonicalId: string;
+  displayName?: string | null;
   priceMin: number | null;
+  priceMax: number | null;
 }
 
 export async function getCafeSnapshot(): Promise<CafeSnapshotRow[]> {
@@ -67,7 +69,9 @@ export async function getItemPriceSnapshot(): Promise<ItemPriceRow[]> {
   try {
     const sql = getSql();
     const rows = await sql<ItemPriceRow[]>`
-      select place_id as "placeId", canonical_id as "canonicalId", price_min::float8 as "priceMin"
+      select place_id as "placeId", canonical_id as "canonicalId",
+             display_name as "displayName",
+             price_min::float8 as "priceMin", price_max::float8 as "priceMax"
       from v_typical_price_v2`;
     return [...rows];
   } catch (err) {

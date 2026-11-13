@@ -132,7 +132,7 @@ function EmptyState({ disabled, onPick }: { disabled: boolean; onPick: (text: st
 }
 
 export function AskAiView() {
-  const { messages, status, quota, send, stop, reset } = useAskAi();
+  const { messages, status, quota, unlimited, send, stop, reset } = useAskAi();
   const [input, setInput] = React.useState("");
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -195,7 +195,7 @@ export function AskAiView() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <QuotaMeter quota={quota} />
+          {unlimited ? null : <QuotaMeter quota={quota} />}
           {messages.length > 0 && (
             <Button
               type="button"
