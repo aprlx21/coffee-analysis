@@ -120,7 +120,7 @@ Khai báo trong `.env.local`:
 - `GROQ_API_KEY`: API Key từ console.groq.com (dùng cho mô hình hội thoại).
 - `AI_PROVIDER`: `groq` (mặc định).
 - `AI_MODEL`: `qwen/qwen3.8-27b` hoặc model hỗ trợ trên Groq.
-- `AI_FALLBACK_MODEL`: model Gemini dự phòng (mặc định `gemini-2.5-flash`, dùng `GEMINI_API_KEY`; thiếu key hoặc rỗng = tắt). `getModel()` tự chuyển sang model này nếu model chính lỗi lúc mở stream (429/5xx). Lỗi giữa chừng khi đã stream một phần thì không thử lại.
+- `AI_FALLBACK_MODEL`: model Gemini dự phòng (mặc định `gemini-3.5-flash-lite`, dùng `GEMINI_API_KEY`; thiếu key hoặc rỗng = tắt). `getModel()` tự chuyển sang model này nếu model chính lỗi lúc mở stream (429/5xx/404/401…, trừ 400/413/422). Lỗi giữa chừng khi đã stream một phần thì không thử lại.
 - Hoàn lượt: nếu AI lỗi/không trả lời được, route gọi `refundAiQuota` (SQL `web/sql/003_refund_ai_quota.sql` — cần chạy trên Supabase) để không mất lượt oan.
 - `RATE_LIMIT_SALT`: Chuỗi ngẫu nhiên dùng để băm định danh client phục vụ giới hạn lượt hỏi.
 - `GEMINI_API_KEY`: API Key từ Google AI Studio (aistudio.google.com) cho `gemini-embedding-001`. Cần thiết lập ở cả Production & Preview. Thiếu key → `searchKnowledge` trả lỗi mềm.

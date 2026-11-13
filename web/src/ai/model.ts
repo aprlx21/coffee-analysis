@@ -34,7 +34,7 @@ function createModel(modelName: string) {
 
 /**
  * LLM Provider tập trung. Nếu cấu hình `AI_FALLBACK_MODEL`, khi model chính lỗi lúc mở stream
- * (429 rate limit, 5xx, model ngừng hỗ trợ…) sẽ tự thử lại bằng model dự phòng — người dùng không thấy lỗi.
+ * (429 rate limit, 5xx, model bị gỡ/sai tên 404, key 401…; trừ lỗi request 400/413/422) sẽ tự thử lại bằng model dự phòng — người dùng không thấy lỗi.
  * Lỗi giữa chừng khi đã stream một phần không được thử lại (tránh trộn hai câu trả lời).
  */
 export function getModel() {
